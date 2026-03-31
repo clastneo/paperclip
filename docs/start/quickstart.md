@@ -1,62 +1,67 @@
 ---
-title: Quickstart
-summary: Get Paperclip running in minutes
+title: 빠른 시작
+summary: 몇 분 안에 이 Paperclip 포크를 실행합니다
 ---
 
-Get Paperclip running locally in under 5 minutes.
+이 Paperclip 포크를 5분 안에 로컬에서 실행할 수 있습니다.
 
-## Quick Start (Recommended)
-
-```sh
-npx paperclipai onboard --yes
-```
-
-This walks you through setup, configures your environment, and gets Paperclip running.
-
-If you already have a Paperclip install, rerunning `onboard` keeps your current config and data paths intact. Use `paperclipai configure` if you want to edit settings.
-
-To start Paperclip again later:
+## 빠른 시작
 
 ```sh
-npx paperclipai run
+git clone https://github.com/clastneo/paperclip.git
+cd paperclip
+pnpm install
+pnpm onboard --yes
+pnpm paperclip:run
 ```
 
-> **Note:** If you used `npx` for setup, always use `npx paperclipai` to run commands. The `pnpm paperclipai` form only works inside a cloned copy of the Paperclip repository (see Local Development below).
+이 방법은 clone한 포크 저장소를 직접 사용하므로, 온보딩과 기본 자산도 이 저장소 기준으로 적용됩니다.
 
-## Local Development
+이미 Paperclip 설정이 있다면 `onboard`를 다시 실행해도 현재 설정과 데이터 경로는 유지됩니다. 설정을 수정하려면 `paperclipai configure`를 사용하세요.
 
-For contributors working on Paperclip itself. Prerequisites: Node.js 20+ and pnpm 9+.
+나중에 clone한 포크에서 다시 실행하려면:
 
-Clone the repository, then:
+```sh
+pnpm paperclip:run
+```
+
+> 참고: `npx paperclipai ...`는 upstream npm 패키지를 설치해 실행하므로, 이 포크의 번역된 온보딩 자산을 사용하지 않습니다. 이 포크에서는 위의 clone 기준 명령을 사용하세요.
+
+## 로컬 개발
+
+이 포크 자체를 개발할 때 사용하는 경로입니다. 요구 사항은 Node.js 20+와 pnpm 9+입니다.
+
+이 포크를 개발 중이라면 저장소를 clone한 뒤 다음 명령을 실행하세요.
 
 ```sh
 pnpm install
 pnpm dev
 ```
 
-This starts the API server and UI at [http://localhost:3100](http://localhost:3100).
+이 명령은 API 서버와 UI를 [http://localhost:3100](http://localhost:3100)에서 시작합니다.
 
-No external database required — Paperclip uses an embedded PostgreSQL instance by default.
+별도 외부 데이터베이스는 필요하지 않습니다. Paperclip은 기본적으로 내장 PostgreSQL 인스턴스를 사용합니다.
 
-When working from the cloned repo, you can also use:
+clone한 저장소에서 바로 CLI를 쓰고 싶다면 다음 명령도 사용할 수 있습니다.
 
 ```sh
-pnpm paperclipai run
+pnpm onboard --yes
+pnpm paperclip:run
 ```
 
-This auto-onboards if config is missing, runs health checks with auto-repair, and starts the server.
+이 명령은 설정이 없으면 자동 온보딩을 수행하고, 필요한 점검과 자동 복구를 거친 뒤 서버를 시작합니다.
 
-## What's Next
+## 다음 단계
 
-Once Paperclip is running:
+Paperclip이 실행되면 다음 순서로 진행하면 됩니다.
 
-1. Create your first company in the web UI
-2. Define a company goal
-3. Create a CEO agent and configure its adapter
-4. Build out the org chart with more agents
-5. Set budgets and assign initial tasks
-6. Hit go — agents start their heartbeats and the company runs
+1. 웹 UI에서 첫 회사를 만듭니다.
+2. 회사 목표를 정의합니다.
+3. CEO 에이전트를 만들고 어댑터를 설정합니다.
+4. 필요한 에이전트를 추가해 조직도를 구성합니다.
+5. 예산을 설정하고 초기 작업을 할당합니다.
+6. 실행을 시작하면 에이전트가 heartbeat를 돌며 회사를 운영하기 시작합니다.
 
-<Card title="Core Concepts" href="/start/core-concepts">
-  Learn the key concepts behind Paperclip
+<Card title="핵심 개념" href="/start/core-concepts">
+  Paperclip의 핵심 개념 살펴보기
 </Card>

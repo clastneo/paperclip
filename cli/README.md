@@ -174,18 +174,22 @@ Paperclip handles the hard orchestration details correctly.
 Open source. Self-hosted. No Paperclip account required.
 
 ```bash
-npx paperclipai onboard --yes
-```
-
-If you already have Paperclip configured, rerunning `onboard` keeps the existing config in place. Use `paperclipai configure` to edit settings.
-
-Or manually:
-
-```bash
-git clone https://github.com/paperclipai/paperclip.git
+git clone https://github.com/clastneo/paperclip.git
 cd paperclip
 pnpm install
-pnpm dev
+pnpm onboard --yes
+pnpm paperclip:run
+```
+
+이미 Paperclip 설정이 있다면 `onboard`를 다시 실행해도 기존 설정은 유지됩니다. 설정을 바꾸려면 `paperclipai configure`를 사용하세요.
+
+> 참고: `npx paperclipai ...`는 upstream npm 패키지를 설치해 실행하므로, 이 포크의 온보딩 자산이나 번역 내용을 사용하지 않습니다. 이 포크에서는 clone한 저장소 안에서 명령을 실행하세요.
+
+이미 clone한 저장소에서 바로 실행하려면:
+
+```bash
+pnpm onboard --yes
+pnpm paperclip:run
 ```
 
 This starts the API server at `http://localhost:3100`. An embedded PostgreSQL database is created automatically — no setup required.

@@ -3,6 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "onboard": "pnpm paperclipai onboard",
+    "paperclip:run": "pnpm paperclipai run",
+    "paperclip:doctor": "pnpm paperclipai doctor",
+    "paperclip:configure": "pnpm paperclipai configure",
     "dev": "pnpm --filter @paperclipai/server exec tsx ../scripts/dev-runner.ts watch",
     "dev:watch": "pnpm --filter @paperclipai/server exec tsx ../scripts/dev-runner.ts watch",
     "dev:once": "pnpm --filter @paperclipai/server exec tsx ../scripts/dev-runner.ts dev",
