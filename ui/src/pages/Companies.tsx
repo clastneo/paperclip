@@ -27,6 +27,7 @@ import {
   DollarSign,
   Calendar,
 } from "lucide-react";
+import { labelForKey } from "../lib/labels";
 
 export function Companies() {
   const {
@@ -45,7 +46,6 @@ export function Companies() {
     queryFn: () => companiesApi.stats(),
   });
 
-  // Inline edit state
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -69,7 +69,7 @@ export function Companies() {
   });
 
   useEffect(() => {
-    setBreadcrumbs([{ label: "Companies" }]);
+    setBreadcrumbs([{ label: "회사" }]);
   }, [setBreadcrumbs]);
 
   function startEdit(companyId: string, currentName: string) {
@@ -91,13 +91,13 @@ export function Companies() {
     <div className="space-y-6">
       <div className="flex items-center justify-end">
         <Button size="sm" onClick={() => openOnboarding()}>
-          <Plus className="h-3.5 w-3.5 mr-1.5" />
-          New Company
+          <Plus className="mr-1.5 h-3.5 w-3.5" />
+          새 회사
         </Button>
       </div>
 
       <div className="h-6">
-        {loading && <p className="text-sm text-muted-foreground">Loading companies...</p>}
+        {loading && <p className="text-sm text-muted-foreground">회사 목록을 불러오는 중...</p>}
         {error && <p className="text-sm text-destructive">{error.message}</p>}
       </div>
 
@@ -111,9 +111,7 @@ export function Companies() {
           const issueCount = companyStats?.issueCount ?? 0;
           const budgetPct =
             company.budgetMonthlyCents > 0
-              ? Math.round(
-                  (company.spentMonthlyCents / company.budgetMonthlyCents) * 100,
-                )
+              ? Math.round((company.spentMonthlyCents / company.budgetMonthlyCents) * 100)
               : 0;
 
           return (
@@ -128,15 +126,14 @@ export function Companies() {
                   setSelectedCompanyId(company.id);
                 }
               }}
-              className={`group text-left bg-card border rounded-lg p-5 transition-colors cursor-pointer ${
+              className={`group cursor-pointer rounded-lg border bg-card p-5 text-left transition-colors ${
                 selected
                   ? "border-primary ring-1 ring-primary"
                   : "border-border hover:border-muted-foreground/30"
               }`}
             >
-              {/* Header row: name + menu */}
               <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0 flex-1">
                   {isEditing ? (
                     <div
                       className="flex items-center gap-2"
@@ -166,7 +163,7 @@ export function Companies() {
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-base">{company.name}</h3>
+                      <h3 className="text-base font-semibold">{company.name}</h3>
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${
                           company.status === "active"
@@ -176,7 +173,7 @@ export function Companies() {
                               : "bg-muted text-muted-foreground"
                         }`}
                       >
-                        {company.status}
+                        {labelForKey(company.status)}
                       </span>
                       <Button
                         variant="ghost"
@@ -192,13 +189,12 @@ export function Companies() {
                     </div>
                   )}
                   {company.description && !isEditing && (
-                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                    <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
                       {company.description}
                     </p>
                   )}
                 </div>
 
-                {/* Three-dot menu */}
                 <div onClick={(e) => e.stopPropagation()}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -211,11 +207,9 @@ export function Companies() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onClick={() => startEdit(company.id, company.name)}
-                      >
+                      <DropdownMenuItem onClick={() => startEdit(company.id, company.name)}>
                         <Pencil className="h-3.5 w-3.5" />
-                        Rename
+                        이름 바꾸기
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -223,59 +217,59 @@ export function Companies() {
                         onClick={() => setConfirmDeleteId(company.id)}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
-                        Delete Company
+                        회사 삭제
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
               </div>
 
-              {/* Stats row */}
-              <div className="flex items-center gap-3 sm:gap-5 mt-4 text-sm text-muted-foreground flex-wrap">
+              <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground sm:gap-5">
                 <div className="flex items-center gap-1.5">
                   <Users className="h-3.5 w-3.5" />
-                  <span>
-                    {agentCount} {agentCount === 1 ? "agent" : "agents"}
-                  </span>
+                  <span>에이전트 {agentCount}명</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <CircleDot className="h-3.5 w-3.5" />
-                  <span>
-                    {issueCount} {issueCount === 1 ? "issue" : "issues"}
-                  </span>
+                  <span>이슈 {issueCount}건</span>
                 </div>
                 <div className="flex items-center gap-1.5 tabular-nums">
                   <DollarSign className="h-3.5 w-3.5" />
                   <span>
                     {formatCents(company.spentMonthlyCents)}
                     {company.budgetMonthlyCents > 0
-                      ? <> / {formatCents(company.budgetMonthlyCents)} <span className="text-xs">({budgetPct}%)</span></>
-                      : <span className="text-xs ml-1">Unlimited budget</span>}
+                      ? (
+                        <>
+                          {" / "}
+                          {formatCents(company.budgetMonthlyCents)}{" "}
+                          <span className="text-xs">({budgetPct}%)</span>
+                        </>
+                        )
+                      : <span className="ml-1 text-xs">예산 제한 없음</span>}
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 ml-auto">
+                <div className="ml-auto flex items-center gap-1.5">
                   <Calendar className="h-3.5 w-3.5" />
-                  <span>Created {relativeTime(company.createdAt)}</span>
+                  <span>생성일 {relativeTime(company.createdAt)}</span>
                 </div>
               </div>
 
-              {/* Delete confirmation */}
               {isConfirmingDelete && (
                 <div
-                  className="mt-4 flex items-center justify-between bg-destructive/5 border border-destructive/20 rounded-md px-4 py-3"
+                  className="mt-4 flex items-center justify-between rounded-md border border-destructive/20 bg-destructive/5 px-4 py-3"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <p className="text-sm text-destructive font-medium">
-                    Delete this company and all its data? This cannot be undone.
+                  <p className="text-sm font-medium text-destructive">
+                    이 회사와 모든 데이터를 삭제할까요? 이 작업은 되돌릴 수 없습니다.
                   </p>
-                  <div className="flex items-center gap-2 ml-4 shrink-0">
+                  <div className="ml-4 flex shrink-0 items-center gap-2">
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setConfirmDeleteId(null)}
                       disabled={deleteMutation.isPending}
                     >
-                      Cancel
+                      취소
                     </Button>
                     <Button
                       variant="destructive"
@@ -283,7 +277,7 @@ export function Companies() {
                       onClick={() => deleteMutation.mutate(company.id)}
                       disabled={deleteMutation.isPending}
                     >
-                      {deleteMutation.isPending ? "Deleting…" : "Delete"}
+                      {deleteMutation.isPending ? "삭제 중..." : "삭제"}
                     </Button>
                   </div>
                 </div>

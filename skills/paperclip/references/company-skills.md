@@ -1,26 +1,26 @@
-# Company Skills Workflow
+# 회사 스킬 워크플로
 
-Use this reference when a board user, CEO, or manager asks you to find a skill, install it into the company library, or assign it to an agent.
+보드 사용자, CEO, 또는 매니저가 스킬을 찾고 회사 라이브러리에 설치하거나 특정 에이전트에 할당해 달라고 요청할 때 이 문서를 참고하세요.
 
-## What Exists
+## 무엇이 존재하나
 
-- Company skill library: install, inspect, update, and read imported skills for the whole company.
-- Agent skill assignment: add or remove company skills on an existing agent.
-- Hire/create composition: pass `desiredSkills` when creating or hiring an agent so the same assignment model applies immediately.
+- 회사 스킬 라이브러리: 회사 전체에서 가져온 스킬을 설치, 조회, 업데이트, 읽을 수 있습니다.
+- 에이전트 스킬 할당: 기존 에이전트에 회사 스킬을 추가하거나 제거할 수 있습니다.
+- 채용/생성 조합: 에이전트를 생성하거나 채용할 때 `desiredSkills`를 전달하면 같은 할당 모델이 즉시 적용됩니다.
 
-The canonical model is:
+정석 흐름은 다음과 같습니다.
 
-1. install the skill into the company
-2. assign the company skill to the agent
-3. optionally do step 2 during hire/create with `desiredSkills`
+1. 스킬을 회사에 설치합니다.
+2. 회사 스킬을 에이전트에 할당합니다.
+3. 선택적으로 2단계를 채용/생성 시점에 `desiredSkills`로 함께 처리합니다.
 
-## Permission Model
+## 권한 모델
 
-- Company skill reads: any same-company actor
-- Company skill mutations: board, CEO, or an agent with the effective `agents:create` capability
-- Agent skill assignment: same permission model as updating that agent
+- 회사 스킬 읽기: 같은 회사의 모든 액터
+- 회사 스킬 변경: 보드, CEO, 또는 실효 권한 `agents:create`를 가진 에이전트
+- 에이전트 스킬 할당: 해당 에이전트를 업데이트할 때와 동일한 권한 모델
 
-## Core Endpoints
+## 핵심 엔드포인트
 
 - `GET /api/companies/:companyId/skills`
 - `GET /api/companies/:companyId/skills/:skillId`
@@ -32,22 +32,22 @@ The canonical model is:
 - `POST /api/companies/:companyId/agent-hires`
 - `POST /api/companies/:companyId/agents`
 
-## Install A Skill Into The Company
+## 회사에 스킬 설치하기
 
-Import using a **skills.sh URL**, a key-style source string, a GitHub URL, or a local path.
+스킬은 **skills.sh URL**, key 스타일 source 문자열, GitHub URL, 또는 로컬 경로로 import할 수 있습니다.
 
-### Source types (in order of preference)
+### source 유형 (권장 순서)
 
-| Source format | Example | When to use |
-|---|---|---|
-| **skills.sh URL** | `https://skills.sh/google-labs-code/stitch-skills/design-md` | When a user gives you a `skills.sh` link. This is the managed skill registry — **always prefer it when available**. |
-| **Key-style string** | `google-labs-code/stitch-skills/design-md` | Shorthand for the same skill — `org/repo/skill-name` format. Equivalent to the skills.sh URL. |
-| **GitHub URL** | `https://github.com/vercel-labs/agent-browser` | When the skill is in a GitHub repo but not on skills.sh. |
-| **Local path** | `/abs/path/to/skill-dir` | When the skill is on disk (dev/testing only). |
+| source 형식 | 예시 | 언제 쓰나 |
+| --- | --- | --- |
+| **skills.sh URL** | `https://skills.sh/google-labs-code/stitch-skills/design-md` | 사용자가 `skills.sh` 링크를 주었을 때 사용합니다. 관리형 스킬 레지스트리이므로 **가능하면 항상 이것을 우선**하세요. |
+| **Key 스타일 문자열** | `google-labs-code/stitch-skills/design-md` | 같은 스킬을 `org/repo/skill-name` 형태로 줄여 쓴 표현입니다. skills.sh URL과 동등합니다. |
+| **GitHub URL** | `https://github.com/vercel-labs/agent-browser` | 스킬이 GitHub 저장소에는 있지만 skills.sh에는 없을 때 사용합니다. |
+| **로컬 경로** | `/abs/path/to/skill-dir` | 스킬이 디스크에 있을 때 사용합니다. 보통 개발/테스트용입니다. |
 
-**Critical:** If a user gives you a `https://skills.sh/...` URL, use that URL or its key-style equivalent (`org/repo/skill-name`) as the `source`. Do **not** convert it to a GitHub URL — skills.sh is the managed registry and the source of truth for versioning, discovery, and updates.
+**중요:** 사용자가 `https://skills.sh/...` URL을 주면, 그 URL 자체나 key 스타일 등가 표현(`org/repo/skill-name`)을 `source`로 사용하세요. GitHub URL로 바꾸지 마세요. skills.sh가 버전, 발견성, 업데이트의 기준이 되는 관리형 레지스트리입니다.
 
-### Example: skills.sh import (preferred)
+### 예시: skills.sh import (권장)
 
 ```sh
 curl -sS -X POST "$PAPERCLIP_API_URL/api/companies/$PAPERCLIP_COMPANY_ID/skills/import" \
@@ -58,7 +58,7 @@ curl -sS -X POST "$PAPERCLIP_API_URL/api/companies/$PAPERCLIP_COMPANY_ID/skills/
   }'
 ```
 
-Or equivalently using the key-style string:
+동일한 스킬을 key 스타일 문자열로도 표현할 수 있습니다.
 
 ```sh
 curl -sS -X POST "$PAPERCLIP_API_URL/api/companies/$PAPERCLIP_COMPANY_ID/skills/import" \
@@ -69,7 +69,7 @@ curl -sS -X POST "$PAPERCLIP_API_URL/api/companies/$PAPERCLIP_COMPANY_ID/skills/
   }'
 ```
 
-### Example: GitHub import
+### 예시: GitHub import
 
 ```sh
 curl -sS -X POST "$PAPERCLIP_API_URL/api/companies/$PAPERCLIP_COMPANY_ID/skills/import" \
@@ -80,13 +80,13 @@ curl -sS -X POST "$PAPERCLIP_API_URL/api/companies/$PAPERCLIP_COMPANY_ID/skills/
   }'
 ```
 
-You can also use source strings such as:
+다음과 같은 source 문자열도 사용할 수 있습니다.
 
 - `google-labs-code/stitch-skills/design-md`
 - `vercel-labs/agent-browser/agent-browser`
 - `npx skills add https://github.com/vercel-labs/agent-browser --skill agent-browser`
 
-If the task is to discover skills from the company project workspaces first:
+먼저 회사 프로젝트 workspace에서 스킬을 탐색해야 하는 작업이라면 다음 경로를 사용합니다.
 
 ```sh
 curl -sS -X POST "$PAPERCLIP_API_URL/api/companies/$PAPERCLIP_COMPANY_ID/skills/scan-projects" \
@@ -95,14 +95,14 @@ curl -sS -X POST "$PAPERCLIP_API_URL/api/companies/$PAPERCLIP_COMPANY_ID/skills/
   -d '{}'
 ```
 
-## Inspect What Was Installed
+## 무엇이 설치되었는지 확인하기
 
 ```sh
 curl -sS "$PAPERCLIP_API_URL/api/companies/$PAPERCLIP_COMPANY_ID/skills" \
   -H "Authorization: Bearer $PAPERCLIP_API_KEY"
 ```
 
-Read the skill entry and its `SKILL.md`:
+설치된 스킬 엔트리와 해당 `SKILL.md`를 읽습니다.
 
 ```sh
 curl -sS "$PAPERCLIP_API_URL/api/companies/$PAPERCLIP_COMPANY_ID/skills/<skill-id>" \
@@ -112,15 +112,15 @@ curl -sS "$PAPERCLIP_API_URL/api/companies/$PAPERCLIP_COMPANY_ID/skills/<skill-i
   -H "Authorization: Bearer $PAPERCLIP_API_KEY"
 ```
 
-## Assign Skills To An Existing Agent
+## 기존 에이전트에 스킬 할당하기
 
-`desiredSkills` accepts:
+`desiredSkills`는 다음 형태를 받을 수 있습니다.
 
-- exact company skill key
-- exact company skill id
-- exact slug when it is unique in the company
+- 정확한 회사 스킬 key
+- 정확한 회사 스킬 id
+- 회사 내에서 유일할 때는 정확한 slug
 
-The server persists canonical company skill keys.
+서버는 canonical company skill key를 저장합니다.
 
 ```sh
 curl -sS -X POST "$PAPERCLIP_API_URL/api/agents/<agent-id>/skills/sync" \
@@ -133,16 +133,16 @@ curl -sS -X POST "$PAPERCLIP_API_URL/api/agents/<agent-id>/skills/sync" \
   }'
 ```
 
-If you need the current state first:
+현재 상태를 먼저 봐야 한다면:
 
 ```sh
 curl -sS "$PAPERCLIP_API_URL/api/agents/<agent-id>/skills" \
   -H "Authorization: Bearer $PAPERCLIP_API_KEY"
 ```
 
-## Include Skills During Hire Or Create
+## 채용 또는 생성 시 스킬 포함하기
 
-Use the same company skill keys or references in `desiredSkills` when hiring or creating an agent:
+에이전트를 채용하거나 생성할 때도 같은 회사 스킬 key 또는 참조를 `desiredSkills`에 넣을 수 있습니다.
 
 ```sh
 curl -sS -X POST "$PAPERCLIP_API_URL/api/companies/$PAPERCLIP_COMPANY_ID/agent-hires" \
@@ -161,7 +161,7 @@ curl -sS -X POST "$PAPERCLIP_API_URL/api/companies/$PAPERCLIP_COMPANY_ID/agent-h
   }'
 ```
 
-For direct create without approval:
+승인 없이 직접 생성하는 경우:
 
 ```sh
 curl -sS -X POST "$PAPERCLIP_API_URL/api/companies/$PAPERCLIP_COMPANY_ID/agents" \
@@ -180,14 +180,14 @@ curl -sS -X POST "$PAPERCLIP_API_URL/api/companies/$PAPERCLIP_COMPANY_ID/agents"
   }'
 ```
 
-## Notes
+## 참고 사항
 
-- Built-in Paperclip runtime skills are still added automatically when required by the adapter.
-- If a reference is missing or ambiguous, the API returns `422`.
-- Prefer linking back to the relevant issue, approval, and agent when you comment about skill changes.
-- Use company portability routes when you need whole-package import/export, not just a skill:
-  - `POST /api/companies/:companyId/imports/preview`
-  - `POST /api/companies/:companyId/imports/apply`
-  - `POST /api/companies/:companyId/exports/preview`
-  - `POST /api/companies/:companyId/exports`
-- Use skill-only import when the task is specifically to add a skill to the company library without importing the surrounding company/team/package structure.
+- 내장 Paperclip 런타임 스킬은 어댑터에 필요할 때 자동으로 추가됩니다.
+- 참조가 없거나 모호하면 API는 `422`를 반환합니다.
+- 스킬 변경에 대해 댓글을 남길 때는 관련 이슈, 승인, 에이전트로 돌아가는 링크를 함께 남기는 편이 좋습니다.
+- 스킬 하나만이 아니라 전체 패키지 import/export가 필요하면 회사 portability 경로를 사용하세요.
+- `POST /api/companies/:companyId/imports/preview`
+- `POST /api/companies/:companyId/imports/apply`
+- `POST /api/companies/:companyId/exports/preview`
+- `POST /api/companies/:companyId/exports`
+- 작업의 목적이 주변 회사/팀/패키지 구조를 가져오는 것이 아니라, 회사 라이브러리에 스킬 하나를 추가하는 것이라면 skill-only import를 사용하세요.

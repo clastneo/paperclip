@@ -51,7 +51,7 @@ export function AuthPage() {
       navigate(nextPath, { replace: true });
     },
     onError: (err) => {
-      setError(err instanceof Error ? err.message : "Authentication failed");
+      setError(err instanceof Error ? err.message : "인증에 실패했습니다.");
     },
   });
 
@@ -63,28 +63,27 @@ export function AuthPage() {
   if (isSessionLoading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
-        <p className="text-sm text-muted-foreground">Loading…</p>
+        <p className="text-sm text-muted-foreground">불러오는 중...</p>
       </div>
     );
   }
 
   return (
     <div className="fixed inset-0 flex bg-background">
-      {/* Left half — form */}
-      <div className="w-full md:w-1/2 flex flex-col overflow-y-auto">
-        <div className="w-full max-w-md mx-auto my-auto px-8 py-12">
-          <div className="flex items-center gap-2 mb-8">
+      <div className="flex w-full flex-col overflow-y-auto md:w-1/2">
+        <div className="mx-auto my-auto w-full max-w-md px-8 py-12">
+          <div className="mb-8 flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm font-medium">Paperclip</span>
           </div>
 
           <h1 className="text-xl font-semibold">
-            {mode === "sign_in" ? "Sign in to Paperclip" : "Create your Paperclip account"}
+            {mode === "sign_in" ? "Paperclip에 로그인" : "Paperclip 계정 만들기"}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {mode === "sign_in"
-              ? "Use your email and password to access this instance."
-              : "Create an account for this instance. Email confirmation is not required in v1."}
+              ? "이 인스턴스에 접속하려면 이메일과 비밀번호를 입력하세요."
+              : "이 인스턴스용 계정을 만듭니다. V1에서는 이메일 확인이 필요하지 않습니다."}
           </p>
 
           <form
@@ -95,7 +94,7 @@ export function AuthPage() {
               event.preventDefault();
               if (mutation.isPending) return;
               if (!canSubmit) {
-                setError("Please fill in all required fields.");
+                setError("필수 항목을 모두 입력해 주세요.");
                 return;
               }
               mutation.mutate();
@@ -103,7 +102,7 @@ export function AuthPage() {
           >
             {mode === "sign_up" && (
               <div>
-                <label htmlFor="name" className="text-xs text-muted-foreground mb-1 block">Name</label>
+                <label htmlFor="name" className="mb-1 block text-xs text-muted-foreground">이름</label>
                 <input
                   id="name"
                   name="name"
@@ -116,7 +115,7 @@ export function AuthPage() {
               </div>
             )}
             <div>
-              <label htmlFor="email" className="text-xs text-muted-foreground mb-1 block">Email</label>
+              <label htmlFor="email" className="mb-1 block text-xs text-muted-foreground">이메일</label>
               <input
                 id="email"
                 name="email"
@@ -129,7 +128,7 @@ export function AuthPage() {
               />
             </div>
             <div>
-              <label htmlFor="password" className="text-xs text-muted-foreground mb-1 block">Password</label>
+              <label htmlFor="password" className="mb-1 block text-xs text-muted-foreground">비밀번호</label>
               <input
                 id="password"
                 name="password"
@@ -148,15 +147,15 @@ export function AuthPage() {
               className={`w-full ${!canSubmit && !mutation.isPending ? "opacity-50" : ""}`}
             >
               {mutation.isPending
-                ? "Working…"
+                ? "처리 중..."
                 : mode === "sign_in"
-                  ? "Sign In"
-                  : "Create Account"}
+                  ? "로그인"
+                  : "계정 만들기"}
             </Button>
           </form>
 
           <div className="mt-5 text-sm text-muted-foreground">
-            {mode === "sign_in" ? "Need an account?" : "Already have an account?"}{" "}
+            {mode === "sign_in" ? "계정이 없나요?" : "이미 계정이 있나요?"}{" "}
             <button
               type="button"
               className="font-medium text-foreground underline underline-offset-2"
@@ -165,14 +164,13 @@ export function AuthPage() {
                 setMode(mode === "sign_in" ? "sign_up" : "sign_in");
               }}
             >
-              {mode === "sign_in" ? "Create one" : "Sign in"}
+              {mode === "sign_in" ? "계정 만들기" : "로그인"}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Right half — ASCII art animation (hidden on mobile) */}
-      <div className="hidden md:block w-1/2 overflow-hidden">
+      <div className="hidden w-1/2 overflow-hidden md:block">
         <AsciiArtAnimation />
       </div>
     </div>
