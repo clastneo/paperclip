@@ -37,13 +37,13 @@ import {
 const concurrencyPolicies = ["coalesce_if_active", "always_enqueue", "skip_if_active"];
 const catchUpPolicies = ["skip_missed", "enqueue_missed_with_cap"];
 const concurrencyPolicyDescriptions: Record<string, string> = {
-  coalesce_if_active: "?ㅽ뻾???대? 吏꾪뻾 以묒씠硫??꾩냽 ?ㅽ뻾? ?섎굹留??湲곗뿴???좎??⑸땲??",
-  always_enqueue: "猷⑦떞???대? ?ㅽ뻾 以묒씠?대룄 紐⑤뱺 ?몃━嫄?諛쒖깮???湲곗뿴???ｌ뒿?덈떎.",
-  skip_if_active: "?ㅽ뻾??吏꾪뻾 以묒씤 ?숈븞 ?ㅼ뼱?????몃━嫄곕뒗 踰꾨┰?덈떎.",
+  coalesce_if_active: "이미 실행 중이면 새 실행은 별도 이슈를 만들지 않고 현재 실행에 합칩니다.",
+  always_enqueue: "루틴이 이미 실행 중이어도 모든 트리거를 새 대기열 항목으로 추가합니다.",
+  skip_if_active: "이미 실행 중인 동안 들어온 새 트리거는 건너뜁니다.",
 };
 const catchUpPolicyDescriptions: Record<string, string> = {
-  skip_missed: "?ㅼ?以꾨윭??猷⑦떞??硫덉떠 ?덈뒗 ?숈븞 ?볦튇 援ш컙? 臾댁떆?⑸땲??",
-  enqueue_missed_with_cap: "蹂듦뎄 ???볦튇 ?ㅼ?以?援ш컙???쒗븳??諛곗튂濡??곕씪?≪뒿?덈떎.",
+  skip_missed: "앱이 꺼져 있던 동안 놓친 주기는 무시하고 다음 일정부터 이어집니다.",
+  enqueue_missed_with_cap: "복구 시 놓친 주기를 제한 범위 안에서 보정 실행으로 추가합니다.",
 };
 
 function autoResizeTextarea(element: HTMLTextAreaElement | null) {
@@ -53,7 +53,7 @@ function autoResizeTextarea(element: HTMLTextAreaElement | null) {
 }
 
 function formatLastRunTimestamp(value: Date | string | null | undefined) {
-  if (!value) return "?놁쓬";
+  if (!value) return "없음";
   return new Date(value).toLocaleString("ko-KR");
 }
 
@@ -87,7 +87,7 @@ export function Routines() {
   });
 
   useEffect(() => {
-    setBreadcrumbs([{ label: "猷⑦떞" }]);
+    setBreadcrumbs([{ label: "루틴" }]);
   }, [setBreadcrumbs]);
 
   const { data: routines, isLoading, error } = useQuery({
@@ -130,8 +130,8 @@ export function Routines() {
       setAdvancedOpen(false);
       await queryClient.invalidateQueries({ queryKey: queryKeys.routines.list(selectedCompanyId!) });
       pushToast({
-        title: "猷⑦떞??留뚮뱾?덉뒿?덈떎",
-        body: "泥?踰덉㎏ ?몃━嫄곕? 異붽????ㅼ젣 ?뚰겕?뚮줈濡??꾪솚?섏꽭??",
+        title: "루틴을 만들었습니다.",
+        body: "트리거와 실행 정책은 상세 페이지에서 이어서 설정할 수 있습니다.",
         tone: "success",
       });
       navigate(`/routines/${routine.id}?tab=triggers`);
@@ -154,8 +154,8 @@ export function Routines() {
     },
     onError: (mutationError) => {
       pushToast({
-        title: "猷⑦떞???낅뜲?댄듃?섏? 紐삵뻽?듬땲??,
-        body: mutationError instanceof Error ? mutationError.message : "Paperclip媛 猷⑦떞???낅뜲?댄듃?섏? 紐삵뻽?듬땲??",
+        title: "루틴을 업데이트하지 못했습니다.",
+        body: mutationError instanceof Error ? mutationError.message : "Paperclip이 루틴을 업데이트하지 못했습니다.",
         tone: "error",
       });
     },
@@ -177,8 +177,8 @@ export function Routines() {
     },
     onError: (mutationError) => {
       pushToast({
-        title: "猷⑦떞 ?ㅽ뻾???쒖옉?섏? 紐삵뻽?듬땲??,
-        body: mutationError instanceof Error ? mutationError.message : "Paperclip媛 猷⑦떞 ?ㅽ뻾???쒖옉?섏? 紐삵뻽?듬땲??",
+        title: "루틴 실행을 시작하지 못했습니다.",
+        body: mutationError instanceof Error ? mutationError.message : "Paperclip이 루틴 실행을 시작하지 못했습니다.",
         tone: "error",
       });
     },
@@ -218,7 +218,7 @@ export function Routines() {
   const currentProject = draft.projectId ? projectById.get(draft.projectId) ?? null : null;
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={Repeat} message="猷⑦떞??蹂대젮硫??뚯궗瑜??좏깮?섏꽭??" />;
+    return <EmptyState icon={Repeat} message="루틴을 보려면 회사를 선택하세요." />;
   }
 
   if (isLoading) {
@@ -230,16 +230,17 @@ export function Routines() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
-            猷⑦떞
+            루틴
             <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Beta</span>
           </h1>
           <p className="text-sm text-muted-foreground">
-            諛섎났 ?묒뾽 ?뺤쓽瑜?留뚮뱾怨? 異붿쟻 媛?ν븳 ?ㅽ뻾 ?댁뒋濡?援ъ껜?뷀빀?덈떎.
+            반복 작업 정의를 만들고 추적 가능한 실행 이슈로 구체화합니다.
           </p>
         </div>
         <Button onClick={() => setComposerOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
-          猷⑦떞 留뚮뱾湲?        </Button>
+          루틴 만들기
+        </Button>
       </div>
 
       <Dialog
@@ -256,9 +257,9 @@ export function Routines() {
         >
           <div className="shrink-0 flex flex-wrap items-center justify-between gap-3 border-b border-border/60 px-5 py-3">
             <div>
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">??猷⑦떞</p>
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">새 루틴</p>
               <p className="text-sm text-muted-foreground">
-                癒쇱? 諛섎났 ?묒뾽???뺤쓽?섏꽭?? ?몃━嫄??ㅼ젙? ?곸꽭 ?섏씠吏?먯꽌 ?댁뼱吏묐땲??
+                먼저 반복 작업을 정의하세요. 트리거 설정은 상세 페이지에서 이어집니다.
               </p>
             </div>
             <Button
@@ -270,7 +271,7 @@ export function Routines() {
               }}
               disabled={createRoutine.isPending}
             >
-              痍⑥냼
+              취소
             </Button>
           </div>
 
@@ -279,7 +280,7 @@ export function Routines() {
               <textarea
                 ref={titleInputRef}
                 className="w-full resize-none overflow-hidden bg-transparent text-xl font-semibold outline-none placeholder:text-muted-foreground/50"
-                placeholder="猷⑦떞 ?쒕ぉ"
+                placeholder="루틴 제목"
                 rows={1}
                 value={draft.title}
                 onChange={(event) => {
@@ -312,15 +313,15 @@ export function Routines() {
             <div className="px-5 pb-3">
               <div className="overflow-x-auto overscroll-x-contain">
                 <div className="inline-flex min-w-full flex-wrap items-center gap-2 text-sm text-muted-foreground sm:min-w-max sm:flex-nowrap">
-                  <span>?대떦</span>
+                  <span>담당</span>
                   <InlineEntitySelector
                     ref={assigneeSelectorRef}
                     value={draft.assigneeAgentId}
                     options={assigneeOptions}
-                    placeholder="?대떦??
-                    noneLabel="?대떦???놁쓬"
-                    searchPlaceholder="?대떦??寃??.."
-                    emptyMessage="?대떦?먮? 李얠? 紐삵뻽?듬땲??"
+                    placeholder="담당"
+                    noneLabel="담당 없음"
+                    searchPlaceholder="담당 검색..."
+                    emptyMessage="담당자를 찾지 못했습니다."
                     onChange={(assigneeAgentId) => {
                       if (assigneeAgentId) trackRecentAssignee(assigneeAgentId);
                       setDraft((current) => ({ ...current, assigneeAgentId }));
@@ -343,7 +344,7 @@ export function Routines() {
                           <span className="truncate">{option.label}</span>
                         )
                       ) : (
-                        <span className="text-muted-foreground">?대떦없음</span>
+                        <span className="text-muted-foreground">담당 없음</span>
                       )
                     }
                     renderOption={(option) => {
@@ -357,15 +358,15 @@ export function Routines() {
                       );
                     }}
                   />
-                  <span>?꾨줈?앺듃</span>
+                  <span>프로젝트</span>
                   <InlineEntitySelector
                     ref={projectSelectorRef}
                     value={draft.projectId}
                     options={projectOptions}
-                    placeholder="?꾨줈?앺듃"
-                    noneLabel="?꾨줈?앺듃 ?놁쓬"
-                    searchPlaceholder="?꾨줈?앺듃 寃??.."
-                    emptyMessage="?꾨줈?앺듃瑜?李얠? 紐삵뻽?듬땲??"
+                    placeholder="프로젝트"
+                    noneLabel="프로젝트 없음"
+                    searchPlaceholder="프로젝트 검색..."
+                    emptyMessage="프로젝트를 찾지 못했습니다."
                     onChange={(projectId) => setDraft((current) => ({ ...current, projectId }))}
                     onConfirm={() => descriptionEditorRef.current?.focus()}
                     renderTriggerValue={(option) =>
@@ -378,7 +379,7 @@ export function Routines() {
                           <span className="truncate">{option.label}</span>
                         </>
                       ) : (
-                        <span className="text-muted-foreground">?꾨줈?앺듃</span>
+                        <span className="text-muted-foreground">프로젝트 없음</span>
                       )
                     }
                     renderOption={(option) => {
@@ -404,7 +405,7 @@ export function Routines() {
                 ref={descriptionEditorRef}
                 value={draft.description}
                 onChange={(description) => setDraft((current) => ({ ...current, description }))}
-                placeholder="吏移⑥쓣 ?낅젰?섏꽭??.."
+                placeholder="에이전트가 수행할 작업을 자세히 적어주세요..."
                 bordered={false}
                 contentClassName="min-h-[160px] text-sm text-muted-foreground"
                 onSubmit={() => {
@@ -419,15 +420,15 @@ export function Routines() {
               <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
                 <CollapsibleTrigger className="flex w-full items-center justify-between text-left">
                   <div>
-                    <p className="text-sm font-medium">怨좉툒 ?꾨떖 ?ㅼ젙</p>
-                    <p className="text-sm text-muted-foreground">?뺤콉 ?쒖뼱???묒뾽 ?뺤쓽蹂대떎 ?ㅼ뿉 ?먯꽭??</p>
+                    <p className="text-sm font-medium">고급 전달 설정</p>
+                    <p className="text-sm text-muted-foreground">정책 제어는 작업 정의보다 뒤에 두세요.</p>
                   </div>
                   {advancedOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
                 </CollapsibleTrigger>
                 <CollapsibleContent className="pt-3">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
-                      <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">?숈떆??/p>
+                      <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">동시성</p>
                       <Select
                         value={draft.concurrencyPolicy}
                         onValueChange={(concurrencyPolicy) => setDraft((current) => ({ ...current, concurrencyPolicy }))}
@@ -444,7 +445,7 @@ export function Routines() {
                       <p className="text-xs text-muted-foreground">{concurrencyPolicyDescriptions[draft.concurrencyPolicy]}</p>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">諛由??ㅽ뻾 泥섎━</p>
+                      <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">누락 보정</p>
                       <Select
                         value={draft.catchUpPolicy}
                         onValueChange={(catchUpPolicy) => setDraft((current) => ({ ...current, catchUpPolicy }))}
@@ -468,7 +469,7 @@ export function Routines() {
 
           <div className="shrink-0 flex flex-col gap-3 border-t border-border/60 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-sm text-muted-foreground">
-              ?앹꽦 ?꾩뿉???쇱젙, ?뱁썒, ?대? ?ㅽ뻾???꾪븳 ?몃━嫄??ㅼ젙 ?붾㈃?쇰줈 諛붾줈 ?대룞?⑸땲??
+              생성 후에는 일정, 반복, 누락 실행을 위한 트리거 설정 화면으로 바로 이동합니다.
             </div>
             <div className="flex flex-col gap-2 sm:items-end">
               <Button
@@ -481,11 +482,11 @@ export function Routines() {
                 }
               >
                 <Plus className="mr-2 h-4 w-4" />
-                {createRoutine.isPending ? "留뚮뱶??以?.." : "猷⑦떞 留뚮뱾湲?}
+                {createRoutine.isPending ? "만드는 중..." : "루틴 만들기"}
               </Button>
               {createRoutine.isError ? (
                 <p className="text-sm text-destructive">
-                  {createRoutine.error instanceof Error ? createRoutine.error.message : "猷⑦떞??留뚮뱾吏 紐삵뻽?듬땲??}
+                  {createRoutine.error instanceof Error ? createRoutine.error.message : "루틴을 만들지 못했습니다."}
                 </p>
               ) : null}
             </div>
@@ -496,7 +497,7 @@ export function Routines() {
       {error ? (
         <Card>
           <CardContent className="pt-6 text-sm text-destructive">
-            {error instanceof Error ? error.message : "猷⑦떞??遺덈윭?ㅼ? 紐삵뻽?듬땲??}
+            {error instanceof Error ? error.message : "루틴을 불러오지 못했습니다."}
           </CardContent>
         </Card>
       ) : null}
@@ -506,7 +507,7 @@ export function Routines() {
           <div className="py-12">
             <EmptyState
               icon={Repeat}
-              message="?꾩쭅 猷⑦떞???놁뒿?덈떎. '猷⑦떞 留뚮뱾湲?濡?泥?諛섎났 ?뚰겕?뚮줈瑜??뺤쓽?섏꽭??"
+              message="아직 루틴이 없습니다. '루틴 만들기'로 첫 반복 워크플로를 정의해 보세요."
             />
           </div>
         ) : (
@@ -514,11 +515,11 @@ export function Routines() {
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="text-left text-xs text-muted-foreground border-b border-border">
-                  <th className="px-3 py-2 font-medium">?대쫫</th>
-                  <th className="px-3 py-2 font-medium">?꾨줈?앺듃</th>
-                  <th className="px-3 py-2 font-medium">?먯씠?꾪듃</th>
-                  <th className="px-3 py-2 font-medium">理쒓렐 ?ㅽ뻾</th>
-                  <th className="px-3 py-2 font-medium">?쒖꽦??/th>
+                  <th className="px-3 py-2 font-medium">이름</th>
+                  <th className="px-3 py-2 font-medium">프로젝트</th>
+                  <th className="px-3 py-2 font-medium">에이전트</th>
+                  <th className="px-3 py-2 font-medium">최근 실행</th>
+                  <th className="px-3 py-2 font-medium">활성</th>
                   <th className="w-12 px-3 py-2" />
                 </tr>
               </thead>
@@ -540,7 +541,7 @@ export function Routines() {
                           </span>
                           {(isArchived || routine.status === "paused") && (
                             <div className="mt-1 text-xs text-muted-foreground">
-                              {isArchived ? "蹂닿??? : "?쇱떆 以묒???}
+                              {isArchived ? "보관됨" : "일시 중지"}
                             </div>
                           )}
                         </div>
@@ -552,7 +553,7 @@ export function Routines() {
                               className="shrink-0 h-3 w-3 rounded-sm"
                               style={{ backgroundColor: projectById.get(routine.projectId)?.color ?? "#6366f1" }}
                             />
-                            <span className="truncate">{projectById.get(routine.projectId)?.name ?? "?????놁쓬"}</span>
+                            <span className="truncate">{projectById.get(routine.projectId)?.name ?? "알 수 없음"}</span>
                           </div>
                         ) : (
                           <span className="text-xs text-muted-foreground">없음</span>
@@ -567,7 +568,7 @@ export function Routines() {
                               <span className="truncate">{agent.name}</span>
                             </div>
                           ) : (
-                            <span className="text-xs text-muted-foreground">?????놁쓬</span>
+                            <span className="text-xs text-muted-foreground">알 수 없음</span>
                           );
                         })() : (
                           <span className="text-xs text-muted-foreground">없음</span>
@@ -586,7 +587,7 @@ export function Routines() {
                             role="switch"
                             data-slot="toggle"
                             aria-checked={enabled}
-                            aria-label={enabled ? `${routine.title} 鍮꾪솢?깊솕` : `${routine.title} ?쒖꽦??}
+                            aria-label={enabled ? `${routine.title} 비활성화` : `${routine.title} 활성화`}
                             disabled={isStatusPending || isArchived}
                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                               enabled ? "bg-foreground" : "bg-muted"
@@ -605,26 +606,26 @@ export function Routines() {
                             />
                           </button>
                           <span className="text-xs text-muted-foreground">
-                            {isArchived ? "蹂닿??? : enabled ? "耳쒖쭚" : "爰쇱쭚"}
+                            {isArchived ? "보관됨" : enabled ? "켜짐" : "꺼짐"}
                           </span>
                         </div>
                       </td>
                       <td className="px-3 py-2.5 text-right" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon-sm" aria-label={`${routine.title} 異붽? ?묒뾽`}>
+                            <Button variant="ghost" size="icon-sm" aria-label={`${routine.title} 추가 작업`}>
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => navigate(`/routines/${routine.id}`)}>
-                              ?몄쭛
+                              상세 보기
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               disabled={runningRoutineId === routine.id || isArchived}
                               onClick={() => runRoutine.mutate(routine.id)}
                             >
-                              {runningRoutineId === routine.id ? "?ㅽ뻾 以?.." : "吏湲??ㅽ뻾"}
+                              {runningRoutineId === routine.id ? "실행 중..." : "지금 실행"}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
@@ -636,7 +637,7 @@ export function Routines() {
                               }
                               disabled={isStatusPending || isArchived}
                             >
-                              {enabled ? "?쇱떆 以묒?" : "?쒖꽦??}
+                              {enabled ? "일시 중지" : "활성화"}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
@@ -647,7 +648,7 @@ export function Routines() {
                               }
                               disabled={isStatusPending}
                             >
-                              {routine.status === "archived" ? "蹂듭썝" : "蹂닿?"}
+                              {routine.status === "archived" ? "복원" : "보관"}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>

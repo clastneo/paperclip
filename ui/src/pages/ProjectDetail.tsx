@@ -393,7 +393,7 @@ function ProjectWorkspacesContent({
                   status: summary.executionWorkspaceStatus!,
                 })}
               >
-                {summary.executionWorkspaceStatus === "cleanup_failed" ? "Retry close" : "Close workspace"}
+                {summary.executionWorkspaceStatus === "cleanup_failed" ? "종료 다시 시도" : "워크스페이스 종료"}
               </Button>
             ) : null}
             <div className="inline-flex items-center gap-1 text-xs text-muted-foreground">

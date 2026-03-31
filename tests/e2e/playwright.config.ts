@@ -1,6 +1,10 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "@playwright/test";
 
-const PORT = Number(process.env.PAPERCLIP_E2E_PORT ?? 3100);
+const configDir = path.dirname(fileURLToPath(import.meta.url));
+const projectRoot = path.resolve(configDir, "../..");
+const PORT = Number(process.env.PAPERCLIP_E2E_PORT ?? 3110);
 const BASE_URL = `http://127.0.0.1:${PORT}`;
 
 export default defineConfig({
@@ -20,13 +24,16 @@ export default defineConfig({
       use: { browserName: "chromium" },
     },
   ],
-  // The webServer directive starts `paperclipai run` before tests.
-  // Expects `pnpm paperclipai` to be runnable from repo root.
   webServer: {
-    command: `pnpm paperclipai run`,
+    command: "node cli/node_modules/tsx/dist/cli.mjs tests/e2e/start-server.ts",
+    cwd: projectRoot,
+    env: {
+      PAPERCLIP_E2E_DATA_DIR: "tmp/playwright-e2e",
+      PAPERCLIP_E2E_PORT: String(PORT),
+    },
     url: `${BASE_URL}/api/health`,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    reuseExistingServer: false,
+    timeout: 180_000,
     stdout: "pipe",
     stderr: "pipe",
   },

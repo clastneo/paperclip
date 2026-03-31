@@ -14,7 +14,7 @@ export function FinanceBillerCard({ row }: FinanceBillerCardProps) {
           <div>
             <CardTitle className="text-base">{providerDisplayName(row.biller)}</CardTitle>
             <CardDescription className="mt-1 text-xs">
-              이벤트 {row.eventCount}건 쨌 유형 {row.kindCount}개
+              이벤트 {row.eventCount}건 · 유형 {row.kindCount}개
             </CardDescription>
           </div>
           <div className="text-right">
@@ -26,11 +26,11 @@ export function FinanceBillerCard({ row }: FinanceBillerCardProps) {
       <CardContent className="space-y-3 px-4 pb-4 pt-3">
         <div className="grid gap-2 text-sm sm:grid-cols-3">
           <div className="border border-border p-3">
-            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">차감</div>
+            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">차변</div>
             <div className="mt-1 font-medium tabular-nums">{formatCents(row.debitCents)}</div>
           </div>
           <div className="border border-border p-3">
-            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">크레딧</div>
+            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">대변</div>
             <div className="mt-1 font-medium tabular-nums">{formatCents(row.creditCents)}</div>
           </div>
           <div className="border border-border p-3">

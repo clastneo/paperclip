@@ -6,7 +6,7 @@ import type {
   CostByBiller,
   CostByProviderModel,
   CostWindowSpendRow,
-  재무Event,
+  FinanceEvent,
   QuotaWindow,
 } from "@paperclipai/shared";
 import { ArrowDownLeft, ArrowUpRight, ChevronDown, ChevronRight, Coins, DollarSign, ReceiptText } from "lucide-react";
@@ -46,22 +46,22 @@ function currentWeekRange(): { from: string; to: string } {
 function budgetScopeTitle(scopeType: BudgetPolicySummary["scopeType"]): string {
   switch (scopeType) {
     case "company":
-      return "?뚯궗 ?덉궛";
+      return "회사 예산";
     case "agent":
-      return "?먯씠?꾪듃 ?덉궛";
+      return "에이전트 예산";
     case "project":
-      return "?꾨줈?앺듃 ?덉궛";
+      return "프로젝트 예산";
   }
 }
 
 function budgetScopeDescription(scopeType: BudgetPolicySummary["scopeType"]): string {
   switch (scopeType) {
     case "company":
-      return "?뚯궗 ?꾩껜???곸슜?섎뒗 ?붽컙 ?뺤콉?낅땲??";
+      return "회사 전체에 적용되는 월간 지출 정책입니다.";
     case "agent":
-      return "媛쒕퀎 ?먯씠?꾪듃??諛섎났 ?곸슜?섎뒗 ?붽컙 吏異??뺤콉?낅땲??";
+      return "개별 에이전트에 반복 적용되는 월간 지출 정책입니다.";
     case "project":
-      return "?ㅽ뻾???곌껐???꾨줈?앺듃???곸슜?섎뒗 ?꾩쟻 吏異??뺤콉?낅땲??";
+      return "프로젝트 실행에 적용되는 누적 지출 정책입니다.";
   }
 }
 
@@ -132,32 +132,32 @@ function FinanceSummaryCard({
   return (
     <Card>
       <CardHeader className="px-5 pt-5 pb-2">
-        <CardTitle className="text-base">?щТ ?먯옣</CardTitle>
-        <CardDescription>?⑥씪 異붾줎 ?붿껌??吏곸젒 留ㅽ븨?섏? ?딅뒗 怨꾩젙 ?⑥쐞 泥?뎄?낅땲??</CardDescription>
+        <CardTitle className="text-base">재무 원장</CardTitle>
+        <CardDescription>단일 추론 요청에 직접 매핑되지 않는 계정 단위 청구입니다.</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3 px-5 pb-5 pt-2 sm:grid-cols-2 xl:grid-cols-4">
         <MetricTile
-          label="李⑤?"
+          label="차변"
           value={formatCents(debitCents)}
-          subtitle={`?좏깮 湲곌컙 ?대깽??${eventCount}嫄?}
+          subtitle={`선택 기간 이벤트 ${eventCount}건`}
           icon={ArrowUpRight}
         />
         <MetricTile
-          label="?蹂"
+          label="대변"
           value={formatCents(creditCents)}
-          subtitle="?섎텋, ?곴퀎, ?щ젅??諛섑솚"
+          subtitle="환불, 상계, 크레딧 반환"
           icon={ArrowDownLeft}
         />
         <MetricTile
-          label="?쒖븸"
+          label="순액"
           value={formatCents(netCents)}
-          subtitle="?좏깮??湲곌컙??李⑤??먯꽌 ?蹂??類 媛?
+          subtitle="선택 기간 차변에서 대변을 뺀 값"
           icon={ReceiptText}
         />
         <MetricTile
-          label="異붿젙"
+          label="추정"
           value={formatCents(estimatedDebitCents)}
-          subtitle="?꾩쭅 泥?뎄??湲곗??쇰줈 ?뺤젙?섏? ?딆? 異붿젙 李⑤?"
+          subtitle="아직 청구 기준으로 확정되지 않은 추정 차변"
           icon={Coins}
         />
       </CardContent>
@@ -187,7 +187,7 @@ export function Costs() {
   } = useDateRange();
 
   useEffect(() => {
-    setBreadcrumbs([{ label: "鍮꾩슜" }]);
+    setBreadcrumbs([{ label: "비용" }]);
   }, [setBreadcrumbs]);
 
   const [today, setToday] = useState(() => new Date().toDateString());
@@ -297,19 +297,19 @@ export function Costs() {
 
   const agentModelRows = useMemo(() => {
     const map = new Map<string, CostByAgentModel[]>();
-    for (const row / spendData?.byAgentModel ?? []) {
+    for (const row of spendData?.byAgentModel ?? []) {
       const rows = map.get(row.agentId) ?? [];
       rows.push(row);
       map.set(row.agentId, rows);
     }
-    for (const [agentId, rows] / map) {
+    for (const [agentId, rows] of map) {
       map.set(agentId, rows.slice().sort((a, b) => b.costCents - a.costCents));
     }
     return map;
   }, [spendData?.byAgentModel]);
 
   const { data: providerData } = useQuery({
-    queryKey: queryKeys.사용량ByProvider(companyId, from || undefined, to || undefined),
+    queryKey: queryKeys.usageByProvider(companyId, from || undefined, to || undefined),
     queryFn: () => costsApi.byProvider(companyId, from || undefined, to || undefined),
     enabled: !!selectedCompanyId && customReady && (mainTab === "providers" || mainTab === "billers"),
     refetchInterval: 30_000,
@@ -317,7 +317,7 @@ export function Costs() {
   });
 
   const { data: billerData } = useQuery({
-    queryKey: queryKeys.사용량ByBiller(companyId, from || undefined, to || undefined),
+    queryKey: queryKeys.usageByBiller(companyId, from || undefined, to || undefined),
     queryFn: () => costsApi.byBiller(companyId, from || undefined, to || undefined),
     enabled: !!selectedCompanyId && customReady && mainTab === "billers",
     refetchInterval: 30_000,
@@ -325,7 +325,7 @@ export function Costs() {
   });
 
   const { data: weekData } = useQuery({
-    queryKey: queryKeys.사용량ByProvider(companyId, weekRange.from, weekRange.to),
+    queryKey: queryKeys.usageByProvider(companyId, weekRange.from, weekRange.to),
     queryFn: () => costsApi.byProvider(companyId, weekRange.from, weekRange.to),
     enabled: !!selectedCompanyId && (mainTab === "providers" || mainTab === "billers"),
     refetchInterval: 30_000,
@@ -333,7 +333,7 @@ export function Costs() {
   });
 
   const { data: weekBillerData } = useQuery({
-    queryKey: queryKeys.사용량ByBiller(companyId, weekRange.from, weekRange.to),
+    queryKey: queryKeys.usageByBiller(companyId, weekRange.from, weekRange.to),
     queryFn: () => costsApi.byBiller(companyId, weekRange.from, weekRange.to),
     enabled: !!selectedCompanyId && mainTab === "billers",
     refetchInterval: 30_000,
@@ -341,7 +341,7 @@ export function Costs() {
   });
 
   const { data: windowData } = useQuery({
-    queryKey: queryKeys.사용량WindowSpend(companyId),
+    queryKey: queryKeys.usageWindowSpend(companyId),
     queryFn: () => costsApi.windowSpend(companyId),
     enabled: !!selectedCompanyId && mainTab === "providers",
     refetchInterval: 30_000,
@@ -349,7 +349,7 @@ export function Costs() {
   });
 
   const { data: quotaData, isLoading: quotaLoading } = useQuery({
-    queryKey: queryKeys.사용량QuotaWindows(companyId),
+    queryKey: queryKeys.usageQuotaWindows(companyId),
     queryFn: () => costsApi.quotaWindows(companyId),
     enabled: !!selectedCompanyId && mainTab === "providers",
     refetchInterval: 300_000,
@@ -358,7 +358,7 @@ export function Costs() {
 
   const byProvider = useMemo(() => {
     const map = new Map<string, CostByProviderModel[]>();
-    for (const row / providerData ?? []) {
+    for (const row of providerData ?? []) {
       const rows = map.get(row.provider) ?? [];
       rows.push(row);
       map.set(row.provider, rows);
@@ -368,7 +368,7 @@ export function Costs() {
 
   const byBiller = useMemo(() => {
     const map = new Map<string, CostByBiller[]>();
-    for (const row / billerData ?? []) {
+    for (const row of billerData ?? []) {
       const rows = map.get(row.biller) ?? [];
       rows.push(row);
       map.set(row.biller, rows);
@@ -378,7 +378,7 @@ export function Costs() {
 
   const weekSpendByProvider = useMemo(() => {
     const map = new Map<string, number>();
-    for (const row / weekData ?? []) {
+    for (const row of weekData ?? []) {
       map.set(row.provider, (map.get(row.provider) ?? 0) + row.costCents);
     }
     return map;
@@ -386,7 +386,7 @@ export function Costs() {
 
   const weekSpendByBiller = useMemo(() => {
     const map = new Map<string, number>();
-    for (const row / weekBillerData ?? []) {
+    for (const row of weekBillerData ?? []) {
       map.set(row.biller, (map.get(row.biller) ?? 0) + row.costCents);
     }
     return map;
@@ -394,7 +394,7 @@ export function Costs() {
 
   const windowSpendByProvider = useMemo(() => {
     const map = new Map<string, CostWindowSpendRow[]>();
-    for (const row / windowData ?? []) {
+    for (const row of windowData ?? []) {
       const rows = map.get(row.provider) ?? [];
       rows.push(row);
       map.set(row.provider, rows);
@@ -404,7 +404,7 @@ export function Costs() {
 
   const quotaWindowsByProvider = useMemo(() => {
     const map = new Map<string, QuotaWindow[]>();
-    for (const result / quotaData ?? []) {
+    for (const result of quotaData ?? []) {
       if (result.ok && result.windows.length > 0) {
         map.set(result.provider, result.windows);
       }
@@ -414,7 +414,7 @@ export function Costs() {
 
   const quotaErrorsByProvider = useMemo(() => {
     const map = new Map<string, string>();
-    for (const result / quotaData ?? []) {
+    for (const result of quotaData ?? []) {
       if (!result.ok && result.error) map.set(result.provider, result.error);
     }
     return map;
@@ -422,7 +422,7 @@ export function Costs() {
 
   const quotaSourcesByProvider = useMemo(() => {
     const map = new Map<string, string>();
-    for (const result / quotaData ?? []) {
+    for (const result of quotaData ?? []) {
       if (typeof result.source === "string" && result.source.length > 0) {
         map.set(result.provider, result.source);
       }
@@ -548,7 +548,7 @@ export function Costs() {
   }), [budgetPolicies]);
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={DollarSign} message="鍮꾩슜??蹂대젮硫??뚯궗瑜??좏깮?섏꽭??" />;
+    return <EmptyState icon={DollarSign} message="비용을 보려면 회사를 선택하세요." />;
   }
 
   const showCustomPrompt = preset === "custom" && !customReady;
@@ -560,9 +560,9 @@ export function Costs() {
       <div className="space-y-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-                <h1 className="text-3xl font-semibold tracking-tight">鍮꾩슜</h1>
+                <h1 className="text-3xl font-semibold tracking-tight">비용</h1>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                  異붾줎 ?ъ슜?? ?뚮옯???섏닔猷? ?щ젅?? ?ㅼ떆媛??쒕룄 李쎌쓣 ?뺤씤?⑸땲??
+                  추론 사용액, 플랫폼 수수료, 크레딧, 실시간 한도 창을 확인합니다.
                 </p>
             </div>
 
@@ -600,35 +600,35 @@ export function Costs() {
 
           <div className="grid gap-3 lg:grid-cols-4">
             <MetricTile
-              label="異붾줎 ?ъ슜??
+              label="추론 사용액"
               value={formatCents(spendData?.summary.spendCents ?? 0)}
-              subtitle={`${formatTokens(inferenceTokenTotal)} ?좏겙 / ?붿껌 踰붿쐞 ?대깽??}
+              subtitle={`${formatTokens(inferenceTokenTotal)} 토큰 / 요청 범위 이벤트`}
               icon={DollarSign}
             />
             <MetricTile
-              label="?덉궛"
+              label="예산"
               value={activeBudgetIncidents.length > 0 ? String(activeBudgetIncidents.length) : (
                 spendData?.summary.budgetCents && spendData.summary.budgetCents > 0
                   ? `${spendData.summary.utilizationPercent}%`
-                  : "?쒗븳 ?놁쓬"
+                  : "한도 없음"
               )}
               subtitle={
                 activeBudgetIncidents.length > 0
                   ? `${budgetData?.pausedAgentCount ?? 0}명 에이전트 중지 / ${budgetData?.pausedProjectCount ?? 0}개 프로젝트 중지`
                   : spendData?.summary.budgetCents && spendData.summary.budgetCents > 0
                     ? `${formatCents(spendData.summary.spendCents)} / ${formatCents(spendData.summary.budgetCents)}`
-                    : "?붽컙 ?쒕룄 誘몄꽕??
+                    : "월간 한도가 설정되지 않았습니다."
               }
               icon={Coins}
             />
             <MetricTile
-              label="?щТ ?쒖븸"
+              label="재무 순액"
               value={formatCents(financeData?.summary.netCents ?? 0)}
               subtitle={`${formatCents(financeData?.summary.debitCents ?? 0)} 차변 / ${formatCents(financeData?.summary.creditCents ?? 0)} 대변`}
               icon={ReceiptText}
             />
             <MetricTile
-              label="?щТ ?대깽??
+              label="재무 이벤트"
               value={String(financeData?.summary.eventCount ?? 0)}
               subtitle={`선택 기간 추정 ${formatCents(financeData?.summary.estimatedDebitCents ?? 0)}`}
               icon={ArrowUpRight}

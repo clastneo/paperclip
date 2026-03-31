@@ -25,7 +25,7 @@ async function signIn(page: Page) {
 }
 
 async function openOnboarding(page: Page) {
-  const wizardHeading = page.locator("h3", { hasText: "Name your company" });
+  const wizardHeading = page.locator("h3", { hasText: "회사 이름 정하기" });
   const startButton = page.getByRole("button", { name: "Start Onboarding" });
 
   await expect(wizardHeading.or(startButton)).toBeVisible({ timeout: 20_000 });
@@ -45,31 +45,31 @@ test.describe("Docker authenticated onboarding smoke", () => {
     await openOnboarding(page);
 
     await page.locator('input[placeholder="Acme Corp"]').fill(COMPANY_NAME);
-    await page.getByRole("button", { name: "Next" }).click();
+    await page.getByRole("button", { name: "다음" }).click();
 
     await expect(
-      page.locator("h3", { hasText: "Create your first agent" })
+      page.locator("h3", { hasText: "첫 번째 에이전트 만들기" })
     ).toBeVisible({ timeout: 10_000 });
 
     await expect(page.locator('input[placeholder="CEO"]')).toHaveValue(AGENT_NAME);
-    await page.getByRole("button", { name: "Next" }).click();
+    await page.getByRole("button", { name: "다음" }).click();
 
     await expect(
-      page.locator("h3", { hasText: "Give it something to do" })
+      page.locator("h3", { hasText: "작업 하나 맡기기" })
     ).toBeVisible({ timeout: 10_000 });
     await page
-      .locator('input[placeholder="e.g. Research competitor pricing"]')
+      .locator('input[placeholder="예: 경쟁사 가격 조사"]')
       .fill(TASK_TITLE);
-    await page.getByRole("button", { name: "Next" }).click();
+    await page.getByRole("button", { name: "다음" }).click();
 
     await expect(
-      page.locator("h3", { hasText: "Ready to launch" })
+      page.locator("h3", { hasText: "실행 준비 완료" })
     ).toBeVisible({ timeout: 10_000 });
     await expect(page.getByText(COMPANY_NAME)).toBeVisible();
     await expect(page.getByText(AGENT_NAME)).toBeVisible();
     await expect(page.getByText(TASK_TITLE)).toBeVisible();
 
-    await page.getByRole("button", { name: "Create & Open Issue" }).click();
+    await page.getByRole("button", { name: "이슈 만들고 열기" }).click();
     await expect(page).toHaveURL(/\/issues\//, { timeout: 10_000 });
 
     const baseUrl = new URL(page.url()).origin;
