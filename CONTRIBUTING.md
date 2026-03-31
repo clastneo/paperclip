@@ -1,74 +1,84 @@
-# Contributing Guide
+# 기여 가이드
 
-Thanks for wanting to contribute!
+기여해 주셔서 감사합니다.
 
-We really appreciate both small fixes and thoughtful larger changes.
+작은 수정이든 큰 변화든 모두 정말 고맙게 생각합니다.
 
-## Two Paths to Get Your Pull Request Accepted
+## PR이 머지되기 쉬운 두 가지 경로
 
-### Path 1: Small, Focused Changes (Fastest way to get merged)
+### 경로 1: 작고 집중된 변경
 
-- Pick **one** clear thing to fix/improve
-- Touch the **smallest possible number of files**
-- Make sure the change is very targeted and easy to review
-- All automated checks pass (including Greptile comments)
-- No new lint/test failures
+가장 빠르게 머지되는 방식입니다.
 
-These almost always get merged quickly when they're clean.
+- 고치거나 개선할 **한 가지**를 고르세요.
+- 가능한 한 **가장 적은 파일**만 수정하세요.
+- 변경 범위가 매우 명확하고 리뷰하기 쉬워야 합니다.
+- 자동 검사 전체가 통과해야 합니다. Greptile 코멘트도 포함됩니다.
+- 새로운 lint/test 실패가 없어야 합니다.
 
-### Path 2: Bigger or Impactful Changes
+이 조건을 만족하면 대부분 빠르게 머지됩니다.
 
-- **First** talk about it in Discord → #dev channel  
-  → Describe what you're trying to solve  
-  → Share rough ideas / approach
-- Once there's rough agreement, build it
-- In your PR include:
-  - Before / After screenshots (or short video if UI/behavior change)
-  - Clear description of what & why
-  - Proof it works (manual testing notes)
-  - All tests passing
-  - All Greptile + other PR comments addressed
+### 경로 2: 더 크거나 영향이 큰 변경
 
-PRs that follow this path are **much** more likely to be accepted, even when they're large.
+- **먼저** Discord `#dev` 채널에서 이야기해 주세요.
+- 해결하려는 문제를 설명하고
+- 대략적인 아이디어나 접근 방법을 공유하세요.
+- 대략적인 합의가 생기면 구현을 시작하세요.
+- PR에는 다음을 포함해 주세요.
+- 변경 전/후 스크린샷 또는 짧은 영상(UI/동작 변화가 있는 경우)
+- 무엇을 왜 바꿨는지에 대한 명확한 설명
+- 실제로 동작한다는 증거(수동 테스트 메모 등)
+- 모든 테스트 통과
+- Greptile 및 기타 PR 코멘트 처리 완료
 
-## General Rules (both paths)
+이 흐름을 따르면 큰 PR도 머지될 가능성이 훨씬 높아집니다.
 
-- Write clear commit messages
-- Keep PR title + description meaningful
-- One PR = one logical change (unless it's a small related group)
-- Run tests locally first
-- Be kind in discussions 😄
+## 공통 규칙
 
-## Writing a Good PR message
+- 커밋 메시지는 명확하게 작성하세요.
+- PR 제목과 설명은 의미 있게 쓰세요.
+- PR 하나는 하나의 논리적 변경만 담으세요. 아주 작은 관련 변경 묶음은 예외입니다.
+- 테스트는 먼저 로컬에서 실행하세요.
+- 토론에서는 친절하게 소통하세요.
 
-Please include a "thinking path" at the top of your PR message that explains from the top of the project down to what you fixed. E.g.:
+## 좋은 PR 메시지 쓰는 법
 
-### Thinking Path Example 1:
+PR 메시지 맨 위에는 프로젝트의 큰 맥락에서부터 내가 고친 부분까지 내려오는 "thinking path"를 넣어 주세요.
 
-> - Paperclip orchestrates ai-agents for zero-human companies
-> - There are many types of adapters for each LLM model provider
-> - But LLM's have a context limit and not all agents can automatically compact their context
-> - So we need to have an adapter-specific configuration for which adapters can and cannot automatically compact their context
-> - This pull request adds per-adapter configuration of compaction, either auto or paperclip managed
-> - That way we can get optimal performance from any adapter/provider in Paperclip
+예시:
 
-### Thinking Path Example 2:
+### Thinking Path Example 1
 
-> - Paperclip orchestrates ai-agents for zero-human companies
-> - But humans want to watch the agents and oversee their work
-> - Human users also operate in teams and so they need their own logins, profiles, views etc.
-> - So we have a multi-user system for humans
-> - But humans want to be able to update their own profile picture and avatar
-> - But the avatar upload form wasn't saving the avatar to the file storage system
-> - So this PR fixes the avatar upload form to use the file storage service
-> - The benefit is we don't have a one-off file storage for just one aspect of the system, which would cause confusion and extra configuration
+> - Paperclip은 zero-human 회사를 위한 AI 에이전트 오케스트레이션 시스템이다
+> - 각 LLM 제공자마다 여러 종류의 adapter가 있다
+> - 하지만 LLM에는 context limit이 있고 모든 에이전트가 자동으로 context를 압축할 수 있는 것은 아니다
+> - 그래서 어떤 adapter가 자동 압축을 할 수 있고 어떤 adapter가 Paperclip 관리 압축이 필요한지에 대한 adapter별 설정이 필요하다
+> - 이 PR은 adapter별 compaction 설정을 추가해 auto 또는 paperclip managed를 선택할 수 있게 한다
+> - 그 결과 Paperclip 안에서 어떤 adapter/provider든 최적 성능을 내도록 할 수 있다
 
-Then have the rest of your normal PR message after the Thinking Path.
+### Thinking Path Example 2
 
-This should include details about what you did, why you did it, why it matters & the benefits, how we can verify it works, and any risks.
+> - Paperclip은 zero-human 회사를 위한 AI 에이전트 오케스트레이션 시스템이다
+> - 하지만 인간은 에이전트를 지켜보고 작업을 감독하고 싶어 한다
+> - 사람 사용자도 팀으로 일하기 때문에 각자 로그인, 프로필, 뷰가 필요하다
+> - 그래서 사람을 위한 multi-user 시스템이 있다
+> - 그런데 사람은 자신의 프로필 사진과 아바타를 업데이트하고 싶어 한다
+> - 하지만 아바타 업로드 폼이 파일 스토리지 시스템에 저장하지 못하고 있었다
+> - 그래서 이 PR은 아바타 업로드 폼이 파일 스토리지 서비스를 사용하도록 수정한다
+> - 그 결과 시스템 한 부분만을 위한 별도 파일 스토리지를 만들 필요가 없어지고, 혼란과 추가 설정을 줄일 수 있다
 
-Please include screenshots if possible if you have a visible change. (use something like the [agent-browser skill](https://github.com/vercel-labs/agent-browser/blob/main/skills/agent-browser/SKILL.md) or similar to take screenshots). Ideally, you include before and after screenshots.
+그 다음에는 일반적인 PR 메시지를 이어서 작성해 주세요.
 
-Questions? Just ask in #dev — we're happy to help.
+여기에는 다음이 포함되어야 합니다.
 
-Happy hacking!
+- 무엇을 했는지
+- 왜 그렇게 했는지
+- 왜 중요한지와 기대 효과
+- 어떻게 검증할 수 있는지
+- 어떤 위험이 있는지
+
+보이는 변화가 있다면 가능하면 스크린샷도 넣어 주세요. 예를 들어 [agent-browser skill](https://github.com/vercel-labs/agent-browser/blob/main/skills/agent-browser/SKILL.md) 같은 도구를 써서 전후 화면을 첨부하면 좋습니다.
+
+질문이 있으면 `#dev`에서 편하게 물어보세요.
+
+즐겁게 해킹하세요!
