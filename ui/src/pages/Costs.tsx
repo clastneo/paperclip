@@ -6,7 +6,7 @@ import type {
   CostByBiller,
   CostByProviderModel,
   CostWindowSpendRow,
-  FinanceEvent,
+  재무Event,
   QuotaWindow,
 } from "@paperclipai/shared";
 import { ArrowDownLeft, ArrowUpRight, ChevronDown, ChevronRight, Coins, DollarSign, ReceiptText } from "lucide-react";
@@ -42,6 +42,27 @@ function currentWeekRange(): { from: string; to: string } {
   const mon = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diffToMon, 0, 0, 0, 0);
   const sun = new Date(mon.getFullYear(), mon.getMonth(), mon.getDate() + 6, 23, 59, 59, 999);
   return { from: mon.toISOString(), to: sun.toISOString() };
+}
+function budgetScopeTitle(scopeType: BudgetPolicySummary["scopeType"]): string {
+  switch (scopeType) {
+    case "company":
+      return "?뚯궗 ?덉궛";
+    case "agent":
+      return "?먯씠?꾪듃 ?덉궛";
+    case "project":
+      return "?꾨줈?앺듃 ?덉궛";
+  }
+}
+
+function budgetScopeDescription(scopeType: BudgetPolicySummary["scopeType"]): string {
+  switch (scopeType) {
+    case "company":
+      return "?뚯궗 ?꾩껜???곸슜?섎뒗 ?붽컙 ?뺤콉?낅땲??";
+    case "agent":
+      return "媛쒕퀎 ?먯씠?꾪듃??諛섎났 ?곸슜?섎뒗 ?붽컙 吏異??뺤콉?낅땲??";
+    case "project":
+      return "?ㅽ뻾???곌껐???꾨줈?앺듃???곸슜?섎뒗 ?꾩쟻 吏異??뺤콉?낅땲??";
+  }
 }
 
 function ProviderTabLabel({ provider, rows }: { provider: string; rows: CostByProviderModel[] }) {
@@ -111,34 +132,32 @@ function FinanceSummaryCard({
   return (
     <Card>
       <CardHeader className="px-5 pt-5 pb-2">
-        <CardTitle className="text-base">Finance ledger</CardTitle>
-        <CardDescription>
-          Account-level charges that do not map to a single inference request.
-        </CardDescription>
+        <CardTitle className="text-base">?щТ ?먯옣</CardTitle>
+        <CardDescription>?⑥씪 異붾줎 ?붿껌??吏곸젒 留ㅽ븨?섏? ?딅뒗 怨꾩젙 ?⑥쐞 泥?뎄?낅땲??</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3 px-5 pb-5 pt-2 sm:grid-cols-2 xl:grid-cols-4">
         <MetricTile
-          label="Debits"
+          label="李⑤?"
           value={formatCents(debitCents)}
-          subtitle={`${eventCount} total event${eventCount === 1 ? "" : "s"} in range`}
+          subtitle={`?좏깮 湲곌컙 ?대깽??${eventCount}嫄?}
           icon={ArrowUpRight}
         />
         <MetricTile
-          label="Credits"
+          label="?蹂"
           value={formatCents(creditCents)}
-          subtitle="Refunds, offsets, and credit returns"
+          subtitle="?섎텋, ?곴퀎, ?щ젅??諛섑솚"
           icon={ArrowDownLeft}
         />
         <MetricTile
-          label="Net"
+          label="?쒖븸"
           value={formatCents(netCents)}
-          subtitle="Debit minus credit for the selected period"
+          subtitle="?좏깮??湲곌컙??李⑤??먯꽌 ?蹂??類 媛?
           icon={ReceiptText}
         />
         <MetricTile
-          label="Estimated"
+          label="異붿젙"
           value={formatCents(estimatedDebitCents)}
-          subtitle="Estimated debits that are not yet invoice-authoritative"
+          subtitle="?꾩쭅 泥?뎄??湲곗??쇰줈 ?뺤젙?섏? ?딆? 異붿젙 李⑤?"
           icon={Coins}
         />
       </CardContent>
@@ -168,7 +187,7 @@ export function Costs() {
   } = useDateRange();
 
   useEffect(() => {
-    setBreadcrumbs([{ label: "Costs" }]);
+    setBreadcrumbs([{ label: "鍮꾩슜" }]);
   }, [setBreadcrumbs]);
 
   const [today, setToday] = useState(() => new Date().toDateString());
@@ -278,19 +297,19 @@ export function Costs() {
 
   const agentModelRows = useMemo(() => {
     const map = new Map<string, CostByAgentModel[]>();
-    for (const row of spendData?.byAgentModel ?? []) {
+    for (const row / spendData?.byAgentModel ?? []) {
       const rows = map.get(row.agentId) ?? [];
       rows.push(row);
       map.set(row.agentId, rows);
     }
-    for (const [agentId, rows] of map) {
+    for (const [agentId, rows] / map) {
       map.set(agentId, rows.slice().sort((a, b) => b.costCents - a.costCents));
     }
     return map;
   }, [spendData?.byAgentModel]);
 
   const { data: providerData } = useQuery({
-    queryKey: queryKeys.usageByProvider(companyId, from || undefined, to || undefined),
+    queryKey: queryKeys.사용량ByProvider(companyId, from || undefined, to || undefined),
     queryFn: () => costsApi.byProvider(companyId, from || undefined, to || undefined),
     enabled: !!selectedCompanyId && customReady && (mainTab === "providers" || mainTab === "billers"),
     refetchInterval: 30_000,
@@ -298,7 +317,7 @@ export function Costs() {
   });
 
   const { data: billerData } = useQuery({
-    queryKey: queryKeys.usageByBiller(companyId, from || undefined, to || undefined),
+    queryKey: queryKeys.사용량ByBiller(companyId, from || undefined, to || undefined),
     queryFn: () => costsApi.byBiller(companyId, from || undefined, to || undefined),
     enabled: !!selectedCompanyId && customReady && mainTab === "billers",
     refetchInterval: 30_000,
@@ -306,7 +325,7 @@ export function Costs() {
   });
 
   const { data: weekData } = useQuery({
-    queryKey: queryKeys.usageByProvider(companyId, weekRange.from, weekRange.to),
+    queryKey: queryKeys.사용량ByProvider(companyId, weekRange.from, weekRange.to),
     queryFn: () => costsApi.byProvider(companyId, weekRange.from, weekRange.to),
     enabled: !!selectedCompanyId && (mainTab === "providers" || mainTab === "billers"),
     refetchInterval: 30_000,
@@ -314,7 +333,7 @@ export function Costs() {
   });
 
   const { data: weekBillerData } = useQuery({
-    queryKey: queryKeys.usageByBiller(companyId, weekRange.from, weekRange.to),
+    queryKey: queryKeys.사용량ByBiller(companyId, weekRange.from, weekRange.to),
     queryFn: () => costsApi.byBiller(companyId, weekRange.from, weekRange.to),
     enabled: !!selectedCompanyId && mainTab === "billers",
     refetchInterval: 30_000,
@@ -322,7 +341,7 @@ export function Costs() {
   });
 
   const { data: windowData } = useQuery({
-    queryKey: queryKeys.usageWindowSpend(companyId),
+    queryKey: queryKeys.사용량WindowSpend(companyId),
     queryFn: () => costsApi.windowSpend(companyId),
     enabled: !!selectedCompanyId && mainTab === "providers",
     refetchInterval: 30_000,
@@ -330,7 +349,7 @@ export function Costs() {
   });
 
   const { data: quotaData, isLoading: quotaLoading } = useQuery({
-    queryKey: queryKeys.usageQuotaWindows(companyId),
+    queryKey: queryKeys.사용량QuotaWindows(companyId),
     queryFn: () => costsApi.quotaWindows(companyId),
     enabled: !!selectedCompanyId && mainTab === "providers",
     refetchInterval: 300_000,
@@ -339,7 +358,7 @@ export function Costs() {
 
   const byProvider = useMemo(() => {
     const map = new Map<string, CostByProviderModel[]>();
-    for (const row of providerData ?? []) {
+    for (const row / providerData ?? []) {
       const rows = map.get(row.provider) ?? [];
       rows.push(row);
       map.set(row.provider, rows);
@@ -349,7 +368,7 @@ export function Costs() {
 
   const byBiller = useMemo(() => {
     const map = new Map<string, CostByBiller[]>();
-    for (const row of billerData ?? []) {
+    for (const row / billerData ?? []) {
       const rows = map.get(row.biller) ?? [];
       rows.push(row);
       map.set(row.biller, rows);
@@ -359,7 +378,7 @@ export function Costs() {
 
   const weekSpendByProvider = useMemo(() => {
     const map = new Map<string, number>();
-    for (const row of weekData ?? []) {
+    for (const row / weekData ?? []) {
       map.set(row.provider, (map.get(row.provider) ?? 0) + row.costCents);
     }
     return map;
@@ -367,7 +386,7 @@ export function Costs() {
 
   const weekSpendByBiller = useMemo(() => {
     const map = new Map<string, number>();
-    for (const row of weekBillerData ?? []) {
+    for (const row / weekBillerData ?? []) {
       map.set(row.biller, (map.get(row.biller) ?? 0) + row.costCents);
     }
     return map;
@@ -375,7 +394,7 @@ export function Costs() {
 
   const windowSpendByProvider = useMemo(() => {
     const map = new Map<string, CostWindowSpendRow[]>();
-    for (const row of windowData ?? []) {
+    for (const row / windowData ?? []) {
       const rows = map.get(row.provider) ?? [];
       rows.push(row);
       map.set(row.provider, rows);
@@ -385,7 +404,7 @@ export function Costs() {
 
   const quotaWindowsByProvider = useMemo(() => {
     const map = new Map<string, QuotaWindow[]>();
-    for (const result of quotaData ?? []) {
+    for (const result / quotaData ?? []) {
       if (result.ok && result.windows.length > 0) {
         map.set(result.provider, result.windows);
       }
@@ -395,7 +414,7 @@ export function Costs() {
 
   const quotaErrorsByProvider = useMemo(() => {
     const map = new Map<string, string>();
-    for (const result of quotaData ?? []) {
+    for (const result / quotaData ?? []) {
       if (!result.ok && result.error) map.set(result.provider, result.error);
     }
     return map;
@@ -403,7 +422,7 @@ export function Costs() {
 
   const quotaSourcesByProvider = useMemo(() => {
     const map = new Map<string, string>();
-    for (const result of quotaData ?? []) {
+    for (const result / quotaData ?? []) {
       if (typeof result.source === "string" && result.source.length > 0) {
         map.set(result.provider, result.source);
       }
@@ -464,7 +483,7 @@ export function Costs() {
         value: "all",
         label: (
           <span className="flex items-center gap-1.5">
-            <span>All providers</span>
+            <span>전체 제공자</span>
             {providerKeys.length > 0 ? (
               <>
                 <span className="font-mono text-xs text-muted-foreground">{formatTokens(allTokens)}</span>
@@ -496,7 +515,7 @@ export function Costs() {
         value: "all",
         label: (
           <span className="flex items-center gap-1.5">
-            <span>All billers</span>
+            <span>전체 청구 주체</span>
             {billerKeys.length > 0 ? (
               <>
                 <span className="font-mono text-xs text-muted-foreground">{formatTokens(allTokens)}</span>
@@ -529,7 +548,7 @@ export function Costs() {
   }), [budgetPolicies]);
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={DollarSign} message="Select a company to view costs." />;
+    return <EmptyState icon={DollarSign} message="鍮꾩슜??蹂대젮硫??뚯궗瑜??좏깮?섏꽭??" />;
   }
 
   const showCustomPrompt = preset === "custom" && !customReady;
@@ -541,9 +560,9 @@ export function Costs() {
       <div className="space-y-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-                <h1 className="text-3xl font-semibold tracking-tight">Costs</h1>
+                <h1 className="text-3xl font-semibold tracking-tight">鍮꾩슜</h1>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                  Inference spend, platform fees, credits, and live quota windows.
+                  異붾줎 ?ъ슜?? ?뚮옯???섏닔猷? ?щ젅?? ?ㅼ떆媛??쒕룄 李쎌쓣 ?뺤씤?⑸땲??
                 </p>
             </div>
 
@@ -569,7 +588,7 @@ export function Costs() {
                 onChange={(event) => setCustomFrom(event.target.value)}
                 className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground"
               />
-              <span className="text-sm text-muted-foreground">to</span>
+              <span className="text-sm text-muted-foreground">~</span>
               <input
                 type="date"
                 value={customTo}
@@ -581,37 +600,37 @@ export function Costs() {
 
           <div className="grid gap-3 lg:grid-cols-4">
             <MetricTile
-              label="Inference spend"
+              label="異붾줎 ?ъ슜??
               value={formatCents(spendData?.summary.spendCents ?? 0)}
-              subtitle={`${formatTokens(inferenceTokenTotal)} tokens across request-scoped events`}
+              subtitle={`${formatTokens(inferenceTokenTotal)} ?좏겙 / ?붿껌 踰붿쐞 ?대깽??}
               icon={DollarSign}
             />
             <MetricTile
-              label="Budget"
+              label="?덉궛"
               value={activeBudgetIncidents.length > 0 ? String(activeBudgetIncidents.length) : (
                 spendData?.summary.budgetCents && spendData.summary.budgetCents > 0
                   ? `${spendData.summary.utilizationPercent}%`
-                  : "Open"
+                  : "?쒗븳 ?놁쓬"
               )}
               subtitle={
                 activeBudgetIncidents.length > 0
-                  ? `${budgetData?.pausedAgentCount ?? 0} agents paused · ${budgetData?.pausedProjectCount ?? 0} projects paused`
+                  ? `${budgetData?.pausedAgentCount ?? 0}명 에이전트 중지 / ${budgetData?.pausedProjectCount ?? 0}개 프로젝트 중지`
                   : spendData?.summary.budgetCents && spendData.summary.budgetCents > 0
-                    ? `${formatCents(spendData.summary.spendCents)} of ${formatCents(spendData.summary.budgetCents)}`
-                    : "No monthly cap configured"
+                    ? `${formatCents(spendData.summary.spendCents)} / ${formatCents(spendData.summary.budgetCents)}`
+                    : "?붽컙 ?쒕룄 誘몄꽕??
               }
               icon={Coins}
             />
             <MetricTile
-              label="Finance net"
+              label="?щТ ?쒖븸"
               value={formatCents(financeData?.summary.netCents ?? 0)}
-              subtitle={`${formatCents(financeData?.summary.debitCents ?? 0)} debits · ${formatCents(financeData?.summary.creditCents ?? 0)} credits`}
+              subtitle={`${formatCents(financeData?.summary.debitCents ?? 0)} 차변 / ${formatCents(financeData?.summary.creditCents ?? 0)} 대변`}
               icon={ReceiptText}
             />
             <MetricTile
-              label="Finance events"
+              label="?щТ ?대깽??
               value={String(financeData?.summary.eventCount ?? 0)}
-              subtitle={`${formatCents(financeData?.summary.estimatedDebitCents ?? 0)} estimated in range`}
+              subtitle={`선택 기간 추정 ${formatCents(financeData?.summary.estimatedDebitCents ?? 0)}`}
               icon={ArrowUpRight}
             />
           </div>
@@ -619,16 +638,16 @@ export function Costs() {
 
       <Tabs value={mainTab} onValueChange={(value) => setMainTab(value as typeof mainTab)}>
         <TabsList variant="line" className="justify-start">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="budgets">Budgets</TabsTrigger>
-          <TabsTrigger value="providers">Providers</TabsTrigger>
-          <TabsTrigger value="billers">Billers</TabsTrigger>
-          <TabsTrigger value="finance">Finance</TabsTrigger>
+          <TabsTrigger value="overview">개요</TabsTrigger>
+          <TabsTrigger value="budgets">예산</TabsTrigger>
+          <TabsTrigger value="providers">제공자</TabsTrigger>
+          <TabsTrigger value="billers">청구 주체</TabsTrigger>
+          <TabsTrigger value="finance">재무</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-4 space-y-4">
           {showCustomPrompt ? (
-            <p className="text-sm text-muted-foreground">Select a start and end date to load data.</p>
+            <p className="text-sm text-muted-foreground">데이터를 불러오려면 시작일과 종료일을 선택하세요.</p>
           ) : showOverviewLoading ? (
             <PageSkeleton variant="costs" />
           ) : overviewError ? (
@@ -657,9 +676,9 @@ export function Costs() {
               <div className="grid gap-4 xl:grid-cols-[1.3fr,1fr]">
                 <Card>
                   <CardHeader className="px-5 pt-5 pb-2">
-                    <CardTitle className="text-base">Inference ledger</CardTitle>
+                    <CardTitle className="text-base">추론 원장</CardTitle>
                     <CardDescription>
-                      Request-scoped inference spend for the selected period.
+                      선택한 기간의 요청 단위 추론 사용액입니다.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4 px-5 pb-5 pt-2">
@@ -670,12 +689,12 @@ export function Costs() {
                         </div>
                         <div className="mt-1 text-sm text-muted-foreground">
                           {spendData?.summary.budgetCents && spendData.summary.budgetCents > 0
-                            ? `Budget ${formatCents(spendData.summary.budgetCents)}`
-                            : "Unlimited budget"}
+                            ? `예산 ${formatCents(spendData.summary.budgetCents)}`
+                            : "예산 제한 없음"}
                         </div>
                       </div>
                       <div className="border border-border px-4 py-3 text-right">
-                        <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">usage</div>
+                        <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">사용량</div>
                         <div className="mt-1 text-lg font-medium tabular-nums">
                           {formatTokens(inferenceTokenTotal)}
                         </div>
@@ -697,7 +716,7 @@ export function Costs() {
                           />
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {spendData.summary.utilizationPercent}% of monthly budget consumed in this range.
+                          {spendData.summary.utilizationPercent}%를 이 기간에 사용했습니다.
                         </div>
                       </div>
                     ) : null}
@@ -716,12 +735,12 @@ export function Costs() {
               <div className="grid gap-4 xl:grid-cols-[1.25fr,0.95fr]">
                 <Card>
                   <CardHeader className="px-5 pt-5 pb-2">
-                    <CardTitle className="text-base">By agent</CardTitle>
-                    <CardDescription>What each agent consumed in the selected period.</CardDescription>
+                    <CardTitle className="text-base">에이전트별</CardTitle>
+                    <CardDescription>선택한 기간에 각 에이전트가 사용한 비용입니다.</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-2 px-5 pb-5 pt-2">
                     {(spendData?.byAgent.length ?? 0) === 0 ? (
-                      <p className="text-sm text-muted-foreground">No cost events yet.</p>
+                      <p className="text-sm text-muted-foreground">아직 비용 이벤트가 없습니다.</p>
                     ) : (
                       spendData?.byAgent.map((row) => {
                         const modelRows = agentModelRows.get(row.agentId) ?? [];
@@ -747,15 +766,15 @@ export function Costs() {
                               <div className="text-right text-sm tabular-nums">
                                 <div className="font-medium">{formatCents(row.costCents)}</div>
                                 <div className="text-xs text-muted-foreground">
-                                  in {formatTokens(row.inputTokens + row.cachedInputTokens)} · out {formatTokens(row.outputTokens)}
+                                  입력 {formatTokens(row.inputTokens + row.cachedInputTokens)} / 출력 {formatTokens(row.outputTokens)}
                                 </div>
                                 {(row.apiRunCount > 0 || row.subscriptionRunCount > 0) ? (
                                   <div className="text-xs text-muted-foreground">
-                                    {row.apiRunCount > 0 ? `${row.apiRunCount} api` : "0 api"}
-                                    {" · "}
+                                    {row.apiRunCount > 0 ? `${row.apiRunCount} API` : "0 API"}
+                                    {" / "}
                                     {row.subscriptionRunCount > 0
-                                      ? `${row.subscriptionRunCount} subscription`
-                                      : "0 subscription"}
+                                      ? `${row.subscriptionRunCount} 구독`
+                                      : "0 구독"}
                                   </div>
                                 ) : null}
                               </div>
@@ -777,7 +796,7 @@ export function Costs() {
                                           <span className="font-mono">{modelRow.model}</span>
                                         </div>
                                         <div className="truncate text-muted-foreground">
-                                          {providerDisplayName(modelRow.biller)} · {billingTypeDisplayName(modelRow.billingType)}
+                                          {providerDisplayName(modelRow.biller)} / {billingTypeDisplayName(modelRow.billingType)}
                                         </div>
                                       </div>
                                       <div className="text-right tabular-nums">
@@ -786,7 +805,7 @@ export function Costs() {
                                           <span className="ml-1 font-normal text-muted-foreground">({sharePct}%)</span>
                                         </div>
                                         <div className="text-muted-foreground">
-                                          {formatTokens(modelRow.inputTokens + modelRow.cachedInputTokens + modelRow.outputTokens)} tok
+                                          {formatTokens(modelRow.inputTokens + modelRow.cachedInputTokens + modelRow.outputTokens)} 토큰
                                         </div>
                                       </div>
                                     </div>
@@ -804,19 +823,19 @@ export function Costs() {
                 <div className="space-y-4">
                   <Card>
                     <CardHeader className="px-5 pt-5 pb-2">
-                      <CardTitle className="text-base">By project</CardTitle>
-                      <CardDescription>Run costs attributed through project-linked issues.</CardDescription>
+                      <CardTitle className="text-base">프로젝트별</CardTitle>
+                      <CardDescription>프로젝트에 연결된 이슈를 통해 귀속된 실행 비용입니다.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-2 px-5 pb-5 pt-2">
                       {(spendData?.byProject.length ?? 0) === 0 ? (
-                        <p className="text-sm text-muted-foreground">No project-attributed run costs yet.</p>
+                        <p className="text-sm text-muted-foreground">아직 프로젝트 귀속 실행 비용이 없습니다.</p>
                       ) : (
                         spendData?.byProject.map((row, index) => (
                           <div
                             key={row.projectId ?? `unattributed-${index}`}
                             className="flex items-center justify-between gap-3 border border-border px-3 py-2 text-sm"
                           >
-                            <span className="truncate">{row.projectName ?? row.projectId ?? "Unattributed"}</span>
+                            <span className="truncate">{row.projectName ?? row.projectId ?? "미귀속"}</span>
                             <span className="font-medium tabular-nums">{formatCents(row.costCents)}</span>
                           </div>
                         ))
@@ -824,7 +843,7 @@ export function Costs() {
                     </CardContent>
                   </Card>
 
-                  <FinanceTimelineCard rows={topFinanceEvents.slice(0, 6)} emptyMessage="No finance events yet. Add account-level charges once biller invoices or credits land." />
+                  <FinanceTimelineCard rows={topFinanceEvents.slice(0, 6)} emptyMessage="아직 재무 이벤트가 없습니다. 청구서나 크레딧이 반영되면 계정 단위 비용이 표시됩니다." />
                 </div>
               </div>
             </>
@@ -840,34 +859,34 @@ export function Costs() {
             <>
               <Card className="border-border/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))]">
                 <CardHeader className="px-5 pt-5 pb-3">
-                  <CardTitle className="text-base">Budget control plane</CardTitle>
+                  <CardTitle className="text-base">예산 제어</CardTitle>
                   <CardDescription>
-                    Hard-stop spend limits for agents and projects. Provider subscription quota stays separate and appears under Providers.
+                    에이전트와 프로젝트의 하드스톱 예산을 관리합니다. 제공자 구독 한도는 별도로 유지되며 제공자 탭에 표시됩니다.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-3 px-5 pb-5 pt-0 md:grid-cols-4">
                   <MetricTile
-                    label="Active incidents"
+                    label="활성 사고"
                     value={String(activeBudgetIncidents.length)}
-                    subtitle="Open soft or hard threshold crossings"
+                    subtitle="열린 소프트/하드 임계치 초과"
                     icon={ReceiptText}
                   />
                   <MetricTile
-                    label="Pending approvals"
+                    label="대기 중 승인"
                     value={String(budgetData?.pendingApprovalCount ?? 0)}
-                    subtitle="Budget override approvals awaiting board action"
+                    subtitle="보드 승인을 기다리는 예산 예외 요청"
                     icon={ArrowUpRight}
                   />
                   <MetricTile
-                    label="Paused agents"
+                    label="중지된 에이전트"
                     value={String(budgetData?.pausedAgentCount ?? 0)}
-                    subtitle="Agent heartbeats blocked by budget"
+                    subtitle="예산으로 heartbeat가 차단된 에이전트"
                     icon={Coins}
                   />
                   <MetricTile
-                    label="Paused projects"
+                    label="중지된 프로젝트"
                     value={String(budgetData?.pausedProjectCount ?? 0)}
-                    subtitle="Project execution blocked by budget"
+                    subtitle="예산으로 실행이 차단된 프로젝트"
                     icon={DollarSign}
                   />
                 </CardContent>
@@ -876,9 +895,9 @@ export function Costs() {
               {activeBudgetIncidents.length > 0 ? (
                 <div className="space-y-3">
                   <div>
-                    <h2 className="text-lg font-semibold">Active incidents</h2>
+                    <h2 className="text-lg font-semibold">활성 사고</h2>
                     <p className="text-sm text-muted-foreground">
-                      Resolve hard stops here by raising the budget or explicitly keeping the scope paused.
+                      예산을 올리거나 범위를 계속 중지 상태로 유지해 하드스톱을 해제하세요.
                     </p>
                   </div>
                   <div className="grid gap-4 xl:grid-cols-2">
@@ -907,14 +926,8 @@ export function Costs() {
                   return (
                     <section key={scopeType} className="space-y-3">
                       <div>
-                        <h2 className="text-lg font-semibold capitalize">{scopeType} budgets</h2>
-                        <p className="text-sm text-muted-foreground">
-                          {scopeType === "company"
-                            ? "Company-wide monthly policy."
-                            : scopeType === "agent"
-                              ? "Recurring monthly spend policies for individual agents."
-                              : "Lifetime spend policies for execution-bound projects."}
-                        </p>
+                        <h2 className="text-lg font-semibold">{budgetScopeTitle(scopeType)}</h2>
+                        <p className="text-sm text-muted-foreground">{budgetScopeDescription(scopeType)}</p>
                       </div>
                       <div className="grid gap-4 xl:grid-cols-2">
                         {rows.map((summary) => (
@@ -939,7 +952,7 @@ export function Costs() {
                 {budgetPolicies.length === 0 ? (
                   <Card>
                     <CardContent className="px-5 py-8 text-sm text-muted-foreground">
-                      No budget policies yet. Set agent and project budgets from their detail pages, or use the existing company monthly budget control.
+                      아직 예산 정책이 없습니다. 에이전트와 프로젝트 상세 화면에서 예산을 설정하거나 기존 회사 월간 예산 제어를 사용하세요.
                     </CardContent>
                   </Card>
                 ) : null}
@@ -950,7 +963,7 @@ export function Costs() {
 
         <TabsContent value="providers" className="mt-4 space-y-4">
           {showCustomPrompt ? (
-            <p className="text-sm text-muted-foreground">Select a start and end date to load data.</p>
+            <p className="text-sm text-muted-foreground">데이터를 불러오려면 시작일과 종료일을 선택하세요.</p>
           ) : (
             <>
               <Tabs value={effectiveProvider} onValueChange={setActiveProvider}>
@@ -958,7 +971,7 @@ export function Costs() {
 
                 <TabsContent value="all" className="mt-4">
                   {providers.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No cost events in this period.</p>
+                    <p className="text-sm text-muted-foreground">이 기간에는 비용 이벤트가 없습니다.</p>
                   ) : (
                     <div className="grid gap-4 md:grid-cols-2">
                       {providers.map((provider) => (
@@ -1005,7 +1018,7 @@ export function Costs() {
 
         <TabsContent value="billers" className="mt-4 space-y-4">
           {showCustomPrompt ? (
-            <p className="text-sm text-muted-foreground">Select a start and end date to load data.</p>
+            <p className="text-sm text-muted-foreground">데이터를 불러오려면 시작일과 종료일을 선택하세요.</p>
           ) : (
             <>
               <Tabs value={effectiveBiller} onValueChange={setActiveBiller}>
@@ -1013,7 +1026,7 @@ export function Costs() {
 
                 <TabsContent value="all" className="mt-4">
                   {billers.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No billable events in this period.</p>
+                    <p className="text-sm text-muted-foreground">이 기간에는 청구 이벤트가 없습니다.</p>
                   ) : (
                     <div className="grid gap-4 md:grid-cols-2">
                       {billers.map((biller) => {
@@ -1058,7 +1071,7 @@ export function Costs() {
 
         <TabsContent value="finance" className="mt-4 space-y-4">
           {showCustomPrompt ? (
-            <p className="text-sm text-muted-foreground">Select a start and end date to load data.</p>
+            <p className="text-sm text-muted-foreground">데이터를 불러오려면 시작일과 종료일을 선택하세요.</p>
           ) : financeLoading ? (
             <PageSkeleton variant="costs" />
           ) : financeError ? (
@@ -1077,12 +1090,12 @@ export function Costs() {
                 <div className="space-y-4">
                   <Card>
                     <CardHeader className="px-5 pt-5 pb-2">
-                      <CardTitle className="text-base">By biller</CardTitle>
-                      <CardDescription>Account-level financial events grouped by who charged or credited them.</CardDescription>
+                      <CardTitle className="text-base">청구 주체별</CardTitle>
+                      <CardDescription>계정 단위 재무 이벤트를 청구 또는 크레딧을 발생시킨 주체별로 묶습니다.</CardDescription>
                     </CardHeader>
                     <CardContent className="grid gap-4 px-5 pb-5 pt-2 md:grid-cols-2">
                       {(financeData?.byBiller.length ?? 0) === 0 ? (
-                        <p className="text-sm text-muted-foreground">No finance events yet.</p>
+                        <p className="text-sm text-muted-foreground">아직 재무 이벤트가 없습니다.</p>
                       ) : (
                         financeData?.byBiller.map((row) => <FinanceBillerCard key={row.biller} row={row} />)
                       )}

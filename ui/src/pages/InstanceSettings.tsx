@@ -33,8 +33,8 @@ export function InstanceSettings() {
 
   useEffect(() => {
     setBreadcrumbs([
-      { label: "Instance Settings" },
-      { label: "Heartbeats" },
+      { label: "인스턴스 설정" },
+      { label: "하트비트" },
     ]);
   }, [setBreadcrumbs]);
 
@@ -73,13 +73,13 @@ export function InstanceSettings() {
       ]);
     },
     onError: (error) => {
-      setActionError(error instanceof Error ? error.message : "Failed to update heartbeat.");
+      setActionError(error instanceof Error ? error.message : "하트비트를 업데이트하지 못했습니다.");
     },
   });
 
   const disableAllMutation = useMutation({
     mutationFn: async (agentRows: InstanceSchedulerHeartbeatAgent[]) => {
-      const enabled = agentRows.filter((a) => a.heartbeatEnabled);
+      const enabled = agentRows.filter((agent) => agent.heartbeatEnabled);
       if (enabled.length === 0) return enabled;
 
       const results = await Promise.allSettled(
@@ -103,11 +103,11 @@ export function InstanceSettings() {
       const failures = results.filter((result): result is PromiseRejectedResult => result.status === "rejected");
       if (failures.length > 0) {
         const firstError = failures[0]?.reason;
-        const detail = firstError instanceof Error ? firstError.message : "Unknown error";
+        const detail = firstError instanceof Error ? firstError.message : "알 수 없는 오류";
         throw new Error(
           failures.length === 1
-            ? `Failed to disable 1 timer heartbeat: ${detail}`
-            : `Failed to disable ${failures.length} of ${enabled.length} timer heartbeats. First error: ${detail}`,
+            ? `타이머 하트비트 1개를 끄지 못했습니다: ${detail}`
+            : `타이머 하트비트 ${enabled.length}개 중 ${failures.length}개를 끄지 못했습니다. 첫 오류: ${detail}`,
         );
       }
       return enabled;
@@ -126,7 +126,7 @@ export function InstanceSettings() {
       ]);
     },
     onError: (error) => {
-      setActionError(error instanceof Error ? error.message : "Failed to disable all heartbeats.");
+      setActionError(error instanceof Error ? error.message : "모든 하트비트를 끄지 못했습니다.");
     },
   });
 
@@ -150,7 +150,7 @@ export function InstanceSettings() {
   }, [agents]);
 
   if (heartbeatsQuery.isLoading) {
-    return <div className="text-sm text-muted-foreground">Loading scheduler heartbeats...</div>;
+    return <div className="text-sm text-muted-foreground">스케줄러 하트비트를 불러오는 중...</div>;
   }
 
   if (heartbeatsQuery.error) {
@@ -158,7 +158,7 @@ export function InstanceSettings() {
       <div className="text-sm text-destructive">
         {heartbeatsQuery.error instanceof Error
           ? heartbeatsQuery.error.message
-          : "Failed to load scheduler heartbeats."}
+          : "스케줄러 하트비트를 불러오지 못했습니다."}
       </div>
     );
   }
@@ -168,17 +168,17 @@ export function InstanceSettings() {
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <Settings className="h-5 w-5 text-muted-foreground" />
-          <h1 className="text-lg font-semibold">Scheduler Heartbeats</h1>
+          <h1 className="text-lg font-semibold">스케줄러 하트비트</h1>
         </div>
         <p className="text-sm text-muted-foreground">
-          Agents with a timer heartbeat enabled across all of your companies.
+          모든 회사에서 타이머 하트비트가 켜져 있는 에이전트 목록입니다.
         </p>
       </div>
 
       <div className="flex items-center gap-4 text-sm text-muted-foreground">
-        <span><span className="font-semibold text-foreground">{activeCount}</span> active</span>
-        <span><span className="font-semibold text-foreground">{disabledCount}</span> disabled</span>
-        <span><span className="font-semibold text-foreground">{grouped.length}</span> {grouped.length === 1 ? "company" : "companies"}</span>
+        <span><span className="font-semibold text-foreground">{activeCount}</span> 활성</span>
+        <span><span className="font-semibold text-foreground">{disabledCount}</span> 비활성</span>
+        <span><span className="font-semibold text-foreground">{grouped.length}</span>개 회사</span>
         {anyEnabled && (
           <Button
             variant="destructive"
@@ -186,14 +186,13 @@ export function InstanceSettings() {
             className="ml-auto h-7 text-xs"
             disabled={disableAllMutation.isPending}
             onClick={() => {
-              const noun = enabledCount === 1 ? "agent" : "agents";
-              if (!window.confirm(`Disable timer heartbeats for all ${enabledCount} enabled ${noun}?`)) {
+              if (!window.confirm(`현재 켜져 있는 타이머 하트비트 ${enabledCount}개를 모두 끌까요?`)) {
                 return;
               }
               disableAllMutation.mutate(agents);
             }}
           >
-            {disableAllMutation.isPending ? "Disabling..." : "Disable All"}
+            {disableAllMutation.isPending ? "끄는 중..." : "모두 끄기"}
           </Button>
         )}
       </div>
@@ -207,7 +206,7 @@ export function InstanceSettings() {
       {agents.length === 0 ? (
         <EmptyState
           icon={Clock3}
-          message="No scheduler heartbeats match the current criteria."
+          message="현재 조건에 맞는 스케줄러 하트비트가 없습니다."
         />
       ) : (
         <div className="space-y-4">
@@ -227,35 +226,35 @@ export function InstanceSettings() {
                       >
                         <Badge
                           variant={agent.schedulerActive ? "default" : "outline"}
-                          className="shrink-0 text-[10px] px-1.5 py-0"
+                          className="shrink-0 px-1.5 py-0 text-[10px]"
                         >
-                          {agent.schedulerActive ? "On" : "Off"}
+                          {agent.schedulerActive ? "켜짐" : "꺼짐"}
                         </Badge>
                         <Link
                           to={buildAgentHref(agent)}
-                          className="font-medium truncate hover:underline"
+                          className="truncate font-medium hover:underline"
                         >
                           {agent.agentName}
                         </Link>
-                        <span className="hidden sm:inline text-muted-foreground truncate">
+                        <span className="hidden truncate text-muted-foreground sm:inline">
                           {humanize(agent.title ?? agent.role)}
                         </span>
-                        <span className="text-muted-foreground tabular-nums shrink-0">
-                          {agent.intervalSec}s
+                        <span className="shrink-0 tabular-nums text-muted-foreground">
+                          {agent.intervalSec}초
                         </span>
                         <span
-                          className="hidden md:inline text-muted-foreground truncate"
+                          className="hidden truncate text-muted-foreground md:inline"
                           title={agent.lastHeartbeatAt ? formatDateTime(agent.lastHeartbeatAt) : undefined}
                         >
                           {agent.lastHeartbeatAt
                             ? relativeTime(agent.lastHeartbeatAt)
-                            : "never"}
+                            : "기록 없음"}
                         </span>
-                        <span className="ml-auto flex items-center gap-1.5 shrink-0">
+                        <span className="ml-auto flex shrink-0 items-center gap-1.5">
                           <Link
                             to={buildAgentHref(agent)}
                             className="text-muted-foreground hover:text-foreground"
-                            title="Full agent config"
+                            title="전체 에이전트 설정"
                           >
                             <ExternalLink className="h-3.5 w-3.5" />
                           </Link>
@@ -266,7 +265,7 @@ export function InstanceSettings() {
                             disabled={saving}
                             onClick={() => toggleMutation.mutate(agent)}
                           >
-                            {saving ? "..." : agent.heartbeatEnabled ? "Disable Timer Heartbeat" : "Enable Timer Heartbeat"}
+                            {saving ? "..." : agent.heartbeatEnabled ? "타이머 하트비트 끄기" : "타이머 하트비트 켜기"}
                           </Button>
                         </span>
                       </div>

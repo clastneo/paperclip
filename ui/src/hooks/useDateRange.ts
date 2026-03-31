@@ -3,12 +3,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 export type DatePreset = "mtd" | "7d" | "30d" | "ytd" | "all" | "custom";
 
 export const PRESET_LABELS: Record<DatePreset, string> = {
-  mtd: "Month to Date",
-  "7d": "Last 7 Days",
-  "30d": "Last 30 Days",
-  ytd: "Year to Date",
-  all: "All Time",
-  custom: "Custom",
+  mtd: "이번 달",
+  "7d": "최근 7일",
+  "30d": "최근 30일",
+  ytd: "올해",
+  all: "전체 기간",
+  custom: "직접 선택",
 };
 
 export const PRESET_KEYS: DatePreset[] = ["mtd", "7d", "30d", "ytd", "all", "custom"];

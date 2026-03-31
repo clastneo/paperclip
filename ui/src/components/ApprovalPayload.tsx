@@ -2,12 +2,11 @@ import { UserPlus, Lightbulb, ShieldAlert, ShieldCheck } from "lucide-react";
 import { formatCents } from "../lib/utils";
 
 export const typeLabel: Record<string, string> = {
-  hire_agent: "Hire Agent",
-  approve_ceo_strategy: "CEO Strategy",
-  budget_override_required: "Budget Override",
+  hire_agent: "에이전트 채용",
+  approve_ceo_strategy: "CEO 전략 승인",
+  budget_override_required: "예산 초과 승인",
 };
 
-/** Build a contextual label for an approval, e.g. "Hire Agent: Designer" */
 export function approvalLabel(type: string, payload?: Record<string, unknown> | null): string {
   const base = typeLabel[type] ?? type;
   if (type === "hire_agent" && payload?.name) {
@@ -28,7 +27,7 @@ function PayloadField({ label, value }: { label: string; value: unknown }) {
   if (!value) return null;
   return (
     <div className="flex items-center gap-2">
-      <span className="text-muted-foreground w-20 sm:w-24 shrink-0 text-xs">{label}</span>
+      <span className="w-20 shrink-0 text-xs text-muted-foreground sm:w-24">{label}</span>
       <span>{String(value)}</span>
     </div>
   );
@@ -44,7 +43,7 @@ function SkillList({ values }: { values: unknown }) {
 
   return (
     <div className="flex items-start gap-2">
-      <span className="text-muted-foreground w-20 sm:w-24 shrink-0 text-xs pt-0.5">Skills</span>
+      <span className="w-20 shrink-0 pt-0.5 text-xs text-muted-foreground sm:w-24">스킬</span>
       <div className="flex flex-wrap gap-1.5">
         {items.map((item) => (
           <span
@@ -63,22 +62,22 @@ export function HireAgentPayload({ payload }: { payload: Record<string, unknown>
   return (
     <div className="mt-3 space-y-1.5 text-sm">
       <div className="flex items-center gap-2">
-        <span className="text-muted-foreground w-20 sm:w-24 shrink-0 text-xs">Name</span>
-        <span className="font-medium">{String(payload.name ?? "—")}</span>
+        <span className="w-20 shrink-0 text-xs text-muted-foreground sm:w-24">이름</span>
+        <span className="font-medium">{String(payload.name ?? "미정")}</span>
       </div>
-      <PayloadField label="Role" value={payload.role} />
-      <PayloadField label="Title" value={payload.title} />
-      <PayloadField label="Icon" value={payload.icon} />
+      <PayloadField label="역할" value={payload.role} />
+      <PayloadField label="직함" value={payload.title} />
+      <PayloadField label="아이콘" value={payload.icon} />
       {!!payload.capabilities && (
         <div className="flex items-start gap-2">
-          <span className="text-muted-foreground w-20 sm:w-24 shrink-0 text-xs pt-0.5">Capabilities</span>
+          <span className="w-20 shrink-0 pt-0.5 text-xs text-muted-foreground sm:w-24">역량</span>
           <span className="text-muted-foreground">{String(payload.capabilities)}</span>
         </div>
       )}
       {!!payload.adapterType && (
         <div className="flex items-center gap-2">
-          <span className="text-muted-foreground w-20 sm:w-24 shrink-0 text-xs">Adapter</span>
-          <span className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded">
+          <span className="w-20 shrink-0 text-xs text-muted-foreground sm:w-24">어댑터</span>
+          <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
             {String(payload.adapterType)}
           </span>
         </div>
@@ -92,14 +91,14 @@ export function CeoStrategyPayload({ payload }: { payload: Record<string, unknow
   const plan = payload.plan ?? payload.description ?? payload.strategy ?? payload.text;
   return (
     <div className="mt-3 space-y-1.5 text-sm">
-      <PayloadField label="Title" value={payload.title} />
+      <PayloadField label="제목" value={payload.title} />
       {!!plan && (
-        <div className="mt-2 rounded-md bg-muted/40 px-3 py-2 text-sm text-muted-foreground whitespace-pre-wrap font-mono text-xs max-h-48 overflow-y-auto">
+        <div className="mt-2 max-h-48 overflow-y-auto whitespace-pre-wrap rounded-md bg-muted/40 px-3 py-2 font-mono text-xs text-muted-foreground">
           {String(plan)}
         </div>
       )}
       {!plan && (
-        <pre className="mt-2 rounded-md bg-muted/40 px-3 py-2 text-xs text-muted-foreground overflow-x-auto max-h-48">
+        <pre className="mt-2 max-h-48 overflow-x-auto rounded-md bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
           {JSON.stringify(payload, null, 2)}
         </pre>
       )}
@@ -112,12 +111,12 @@ export function BudgetOverridePayload({ payload }: { payload: Record<string, unk
   const observedAmount = typeof payload.observedAmount === "number" ? payload.observedAmount : null;
   return (
     <div className="mt-3 space-y-1.5 text-sm">
-      <PayloadField label="Scope" value={payload.scopeName ?? payload.scopeType} />
-      <PayloadField label="Window" value={payload.windowKind} />
-      <PayloadField label="Metric" value={payload.metric} />
+      <PayloadField label="범위" value={payload.scopeName ?? payload.scopeType} />
+      <PayloadField label="기간" value={payload.windowKind} />
+      <PayloadField label="지표" value={payload.metric} />
       {(budgetAmount !== null || observedAmount !== null) ? (
         <div className="rounded-md bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
-          Limit {budgetAmount !== null ? formatCents(budgetAmount) : "—"} · Observed {observedAmount !== null ? formatCents(observedAmount) : "—"}
+          한도 {budgetAmount !== null ? formatCents(budgetAmount) : "미정"} / 사용액 {observedAmount !== null ? formatCents(observedAmount) : "미정"}
         </div>
       ) : null}
       {!!payload.guidance && (

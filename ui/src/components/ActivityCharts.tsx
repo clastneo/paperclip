@@ -1,29 +1,26 @@
 import type { HeartbeatRun } from "@paperclipai/shared";
-
-/* ---- Utilities ---- */
+import { labelForKey } from "../lib/labels";
 
 export function getLast14Days(): string[] {
-  return Array.from({ length: 14 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (13 - i));
-    return d.toISOString().slice(0, 10);
+  return Array.from({ length: 14 }, (_, index) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (13 - index));
+    return date.toISOString().slice(0, 10);
   });
 }
 
 function formatDayLabel(dateStr: string): string {
-  const d = new Date(dateStr + "T12:00:00");
-  return `${d.getMonth() + 1}/${d.getDate()}`;
+  const date = new Date(`${dateStr}T12:00:00`);
+  return `${date.getMonth() + 1}/${date.getDate()}`;
 }
-
-/* ---- Sub-components ---- */
 
 function DateLabels({ days }: { days: string[] }) {
   return (
-    <div className="flex gap-[3px] mt-1.5">
-      {days.map((day, i) => (
+    <div className="mt-1.5 flex gap-[3px]">
+      {days.map((day, index) => (
         <div key={day} className="flex-1 text-center">
-          {(i === 0 || i === 6 || i === 13) ? (
-            <span className="text-[9px] text-muted-foreground tabular-nums">{formatDayLabel(day)}</span>
+          {index === 0 || index === 6 || index === 13 ? (
+            <span className="text-[9px] tabular-nums text-muted-foreground">{formatDayLabel(day)}</span>
           ) : null}
         </div>
       ))}
@@ -33,10 +30,10 @@ function DateLabels({ days }: { days: string[] }) {
 
 function ChartLegend({ items }: { items: { color: string; label: string }[] }) {
   return (
-    <div className="flex flex-wrap gap-x-2.5 gap-y-0.5 mt-2">
-      {items.map(item => (
+    <div className="mt-2 flex flex-wrap gap-x-2.5 gap-y-0.5">
+      {items.map((item) => (
         <span key={item.label} className="flex items-center gap-1 text-[9px] text-muted-foreground">
-          <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
+          <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
           {item.label}
         </span>
       ))}
@@ -44,9 +41,17 @@ function ChartLegend({ items }: { items: { color: string; label: string }[] }) {
   );
 }
 
-export function ChartCard({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+export function ChartCard({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="border border-border rounded-lg p-4 space-y-3">
+    <div className="space-y-3 rounded-lg border border-border p-4">
       <div>
         <h3 className="text-xs font-medium text-muted-foreground">{title}</h3>
         {subtitle && <span className="text-[10px] text-muted-foreground/60">{subtitle}</span>}
@@ -56,11 +61,8 @@ export function ChartCard({ title, subtitle, children }: { title: string; subtit
   );
 }
 
-/* ---- Chart Components ---- */
-
 export function RunActivityChart({ runs }: { runs: HeartbeatRun[] }) {
   const days = getLast14Days();
-
   const grouped = new Map<string, { succeeded: number; failed: number; other: number }>();
   for (const day of days) grouped.set(day, { succeeded: 0, failed: 0, other: 0 });
   for (const run of runs) {
@@ -72,20 +74,20 @@ export function RunActivityChart({ runs }: { runs: HeartbeatRun[] }) {
     else entry.other++;
   }
 
-  const maxValue = Math.max(...Array.from(grouped.values()).map(v => v.succeeded + v.failed + v.other), 1);
-  const hasData = Array.from(grouped.values()).some(v => v.succeeded + v.failed + v.other > 0);
+  const maxValue = Math.max(...Array.from(grouped.values()).map((value) => value.succeeded + value.failed + value.other), 1);
+  const hasData = Array.from(grouped.values()).some((value) => value.succeeded + value.failed + value.other > 0);
 
-  if (!hasData) return <p className="text-xs text-muted-foreground">No runs yet</p>;
+  if (!hasData) return <p className="text-xs text-muted-foreground">아직 실행 기록이 없습니다.</p>;
 
   return (
     <div>
-      <div className="flex items-end gap-[3px] h-20">
-        {days.map(day => {
+      <div className="flex h-20 items-end gap-[3px]">
+        {days.map((day) => {
           const entry = grouped.get(day)!;
           const total = entry.succeeded + entry.failed + entry.other;
           const heightPct = (total / maxValue) * 100;
           return (
-            <div key={day} className="flex-1 h-full flex flex-col justify-end" title={`${day}: ${total} runs`}>
+            <div key={day} className="flex h-full flex-1 flex-col justify-end" title={`${day}: ${total}회 실행`}>
               {total > 0 ? (
                 <div className="flex flex-col-reverse gap-px overflow-hidden" style={{ height: `${heightPct}%`, minHeight: 2 }}>
                   {entry.succeeded > 0 && <div className="bg-emerald-500" style={{ flex: entry.succeeded }} />}
@@ -93,7 +95,7 @@ export function RunActivityChart({ runs }: { runs: HeartbeatRun[] }) {
                   {entry.other > 0 && <div className="bg-neutral-500" style={{ flex: entry.other }} />}
                 </div>
               ) : (
-                <div className="bg-muted/30 rounded-sm" style={{ height: 2 }} />
+                <div className="rounded-sm bg-muted/30" style={{ height: 2 }} />
               )}
             </div>
           );
@@ -124,35 +126,35 @@ export function PriorityChart({ issues }: { issues: { priority: string; createdA
     if (issue.priority in entry) entry[issue.priority]++;
   }
 
-  const maxValue = Math.max(...Array.from(grouped.values()).map(v => Object.values(v).reduce((a, b) => a + b, 0)), 1);
-  const hasData = Array.from(grouped.values()).some(v => Object.values(v).reduce((a, b) => a + b, 0) > 0);
+  const maxValue = Math.max(...Array.from(grouped.values()).map((value) => Object.values(value).reduce((a, b) => a + b, 0)), 1);
+  const hasData = Array.from(grouped.values()).some((value) => Object.values(value).reduce((a, b) => a + b, 0) > 0);
 
-  if (!hasData) return <p className="text-xs text-muted-foreground">No issues</p>;
+  if (!hasData) return <p className="text-xs text-muted-foreground">아직 이슈가 없습니다.</p>;
 
   return (
     <div>
-      <div className="flex items-end gap-[3px] h-20">
-        {days.map(day => {
+      <div className="flex h-20 items-end gap-[3px]">
+        {days.map((day) => {
           const entry = grouped.get(day)!;
           const total = Object.values(entry).reduce((a, b) => a + b, 0);
           const heightPct = (total / maxValue) * 100;
           return (
-            <div key={day} className="flex-1 h-full flex flex-col justify-end" title={`${day}: ${total} issues`}>
+            <div key={day} className="flex h-full flex-1 flex-col justify-end" title={`${day}: ${total}개 이슈`}>
               {total > 0 ? (
                 <div className="flex flex-col-reverse gap-px overflow-hidden" style={{ height: `${heightPct}%`, minHeight: 2 }}>
-                  {priorityOrder.map(p => entry[p] > 0 ? (
-                    <div key={p} style={{ flex: entry[p], backgroundColor: priorityColors[p] }} />
+                  {priorityOrder.map((priority) => entry[priority] > 0 ? (
+                    <div key={priority} style={{ flex: entry[priority], backgroundColor: priorityColors[priority] }} />
                   ) : null)}
                 </div>
               ) : (
-                <div className="bg-muted/30 rounded-sm" style={{ height: 2 }} />
+                <div className="rounded-sm bg-muted/30" style={{ height: 2 }} />
               )}
             </div>
           );
         })}
       </div>
       <DateLabels days={days} />
-      <ChartLegend items={priorityOrder.map(p => ({ color: priorityColors[p], label: p.charAt(0).toUpperCase() + p.slice(1) }))} />
+      <ChartLegend items={priorityOrder.map((priority) => ({ color: priorityColors[priority], label: labelForKey(priority) }))} />
     </div>
   );
 }
@@ -168,13 +170,13 @@ const statusColors: Record<string, string> = {
 };
 
 const statusLabels: Record<string, string> = {
-  todo: "To Do",
-  in_progress: "In Progress",
-  in_review: "In Review",
-  done: "Done",
-  blocked: "Blocked",
-  cancelled: "Cancelled",
-  backlog: "Backlog",
+  todo: "할 일",
+  in_progress: "진행 중",
+  in_review: "검토 중",
+  done: "완료",
+  blocked: "차단됨",
+  cancelled: "취소됨",
+  backlog: "백로그",
 };
 
 export function IssueStatusChart({ issues }: { issues: { status: string; createdAt: Date }[] }) {
@@ -190,36 +192,36 @@ export function IssueStatusChart({ issues }: { issues: { status: string; created
     allStatuses.add(issue.status);
   }
 
-  const statusOrder = ["todo", "in_progress", "in_review", "done", "blocked", "cancelled", "backlog"].filter(s => allStatuses.has(s));
-  const maxValue = Math.max(...Array.from(grouped.values()).map(v => Object.values(v).reduce((a, b) => a + b, 0)), 1);
+  const statusOrder = ["todo", "in_progress", "in_review", "done", "blocked", "cancelled", "backlog"].filter((status) => allStatuses.has(status));
+  const maxValue = Math.max(...Array.from(grouped.values()).map((value) => Object.values(value).reduce((a, b) => a + b, 0)), 1);
   const hasData = allStatuses.size > 0;
 
-  if (!hasData) return <p className="text-xs text-muted-foreground">No issues</p>;
+  if (!hasData) return <p className="text-xs text-muted-foreground">아직 이슈가 없습니다.</p>;
 
   return (
     <div>
-      <div className="flex items-end gap-[3px] h-20">
-        {days.map(day => {
+      <div className="flex h-20 items-end gap-[3px]">
+        {days.map((day) => {
           const entry = grouped.get(day)!;
           const total = Object.values(entry).reduce((a, b) => a + b, 0);
           const heightPct = (total / maxValue) * 100;
           return (
-            <div key={day} className="flex-1 h-full flex flex-col justify-end" title={`${day}: ${total} issues`}>
+            <div key={day} className="flex h-full flex-1 flex-col justify-end" title={`${day}: ${total}개 이슈`}>
               {total > 0 ? (
                 <div className="flex flex-col-reverse gap-px overflow-hidden" style={{ height: `${heightPct}%`, minHeight: 2 }}>
-                  {statusOrder.map(s => (entry[s] ?? 0) > 0 ? (
-                    <div key={s} style={{ flex: entry[s], backgroundColor: statusColors[s] ?? "#6b7280" }} />
+                  {statusOrder.map((status) => (entry[status] ?? 0) > 0 ? (
+                    <div key={status} style={{ flex: entry[status], backgroundColor: statusColors[status] ?? "#6b7280" }} />
                   ) : null)}
                 </div>
               ) : (
-                <div className="bg-muted/30 rounded-sm" style={{ height: 2 }} />
+                <div className="rounded-sm bg-muted/30" style={{ height: 2 }} />
               )}
             </div>
           );
         })}
       </div>
       <DateLabels days={days} />
-      <ChartLegend items={statusOrder.map(s => ({ color: statusColors[s] ?? "#6b7280", label: statusLabels[s] ?? s }))} />
+      <ChartLegend items={statusOrder.map((status) => ({ color: statusColors[status] ?? "#6b7280", label: statusLabels[status] ?? labelForKey(status) }))} />
     </div>
   );
 }
@@ -236,22 +238,22 @@ export function SuccessRateChart({ runs }: { runs: HeartbeatRun[] }) {
     if (run.status === "succeeded") entry.succeeded++;
   }
 
-  const hasData = Array.from(grouped.values()).some(v => v.total > 0);
-  if (!hasData) return <p className="text-xs text-muted-foreground">No runs yet</p>;
+  const hasData = Array.from(grouped.values()).some((value) => value.total > 0);
+  if (!hasData) return <p className="text-xs text-muted-foreground">아직 실행 기록이 없습니다.</p>;
 
   return (
     <div>
-      <div className="flex items-end gap-[3px] h-20">
-        {days.map(day => {
+      <div className="flex h-20 items-end gap-[3px]">
+        {days.map((day) => {
           const entry = grouped.get(day)!;
           const rate = entry.total > 0 ? entry.succeeded / entry.total : 0;
           const color = entry.total === 0 ? undefined : rate >= 0.8 ? "#10b981" : rate >= 0.5 ? "#eab308" : "#ef4444";
           return (
-            <div key={day} className="flex-1 h-full flex flex-col justify-end" title={`${day}: ${entry.total > 0 ? Math.round(rate * 100) : 0}% (${entry.succeeded}/${entry.total})`}>
+            <div key={day} className="flex h-full flex-1 flex-col justify-end" title={`${day}: ${entry.total > 0 ? Math.round(rate * 100) : 0}% (${entry.succeeded}/${entry.total})`}>
               {entry.total > 0 ? (
                 <div style={{ height: `${rate * 100}%`, minHeight: 2, backgroundColor: color }} />
               ) : (
-                <div className="bg-muted/30 rounded-sm" style={{ height: 2 }} />
+                <div className="rounded-sm bg-muted/30" style={{ height: 2 }} />
               )}
             </div>
           );

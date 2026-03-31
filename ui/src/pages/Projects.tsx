@@ -19,7 +19,7 @@ export function Projects() {
   const { setBreadcrumbs } = useBreadcrumbs();
 
   useEffect(() => {
-    setBreadcrumbs([{ label: "Projects" }]);
+    setBreadcrumbs([{ label: "프로젝트" }]);
   }, [setBreadcrumbs]);
 
   const { data: allProjects, isLoading, error } = useQuery({
@@ -28,12 +28,12 @@ export function Projects() {
     enabled: !!selectedCompanyId,
   });
   const projects = useMemo(
-    () => (allProjects ?? []).filter((p) => !p.archivedAt),
+    () => (allProjects ?? []).filter((project) => !project.archivedAt),
     [allProjects],
   );
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={Hexagon} message="Select a company to view projects." />;
+    return <EmptyState icon={Hexagon} message="회사를 선택하면 프로젝트를 볼 수 있습니다." />;
   }
 
   if (isLoading) {
@@ -44,8 +44,8 @@ export function Projects() {
     <div className="space-y-4">
       <div className="flex items-center justify-end">
         <Button size="sm" variant="outline" onClick={openNewProject}>
-          <Plus className="h-4 w-4 mr-1" />
-          Add Project
+          <Plus className="mr-1 h-4 w-4" />
+          프로젝트 추가
         </Button>
       </div>
 
@@ -54,8 +54,8 @@ export function Projects() {
       {!isLoading && projects.length === 0 && (
         <EmptyState
           icon={Hexagon}
-          message="No projects yet."
-          action="Add Project"
+          message="아직 프로젝트가 없습니다."
+          action="프로젝트 추가"
           onAction={openNewProject}
         />
       )}
@@ -68,7 +68,7 @@ export function Projects() {
               title={project.name}
               subtitle={project.description ?? undefined}
               to={projectUrl(project)}
-              trailing={
+              trailing={(
                 <div className="flex items-center gap-3">
                   {project.targetDate && (
                     <span className="text-xs text-muted-foreground">
@@ -77,7 +77,7 @@ export function Projects() {
                   )}
                   <StatusBadge status={project.status} />
                 </div>
-              }
+              )}
             />
           ))}
         </div>

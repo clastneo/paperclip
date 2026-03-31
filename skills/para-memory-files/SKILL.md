@@ -1,104 +1,107 @@
 ---
 name: para-memory-files
 description: >
-  File-based memory system using Tiago Forte's PARA method. Use this skill whenever
-  you need to store, retrieve, update, or organize knowledge across sessions. Covers
-  three memory layers: (1) Knowledge graph in PARA folders with atomic YAML facts,
-  (2) Daily notes as raw timeline, (3) Tacit knowledge about user patterns. Also
-  handles planning files, memory decay, weekly synthesis, and recall via qmd.
-  Trigger on any memory operation: saving facts, writing daily notes, creating
-  entities, running weekly synthesis, recalling past context, or managing plans.
+  Tiago Forte의 PARA 방식으로 구성된 파일 기반 메모리 시스템입니다.
+  세션을 넘어서 지식을 저장, 조회, 갱신, 정리해야 할 때 이 스킬을 사용하세요.
+  세 가지 메모리 계층을 다룹니다:
+  (1) PARA 폴더 안의 원자적 YAML 사실로 구성된 지식 그래프,
+  (2) 원시 타임라인 역할을 하는 일일 노트,
+  (3) 사용자 패턴에 대한 암묵지.
+  계획 파일, 메모리 감쇠, 주간 합성, `qmd`를 통한 회상도 포함합니다.
+  사실 저장, 일일 노트 작성, 엔티티 생성, 주간 합성, 과거 맥락 회상,
+  계획 관리 등 모든 메모리 작업에서 사용하세요.
 ---
 
-# PARA Memory Files
+# PARA 메모리 파일
 
-Persistent, file-based memory organized by Tiago Forte's PARA method. Three layers: a knowledge graph, daily notes, and tacit knowledge. All paths are relative to `$AGENT_HOME`.
+Tiago Forte의 PARA 방식으로 정리된 지속형 파일 기반 메모리입니다. 세 계층으로 나뉩니다: 지식 그래프, 일일 노트, 암묵지. 모든 경로는 `$AGENT_HOME` 기준 상대 경로입니다.
 
-## Three Memory Layers
+## 세 가지 메모리 계층
 
-### Layer 1: Knowledge Graph (`$AGENT_HOME/life/` -- PARA)
+### 계층 1: 지식 그래프 (`$AGENT_HOME/life/` -- PARA)
 
-Entity-based storage. Each entity gets a folder with two tiers:
+엔티티 기반 저장소입니다. 각 엔티티는 두 단계 구조의 폴더를 가집니다.
 
-1. `summary.md` -- quick context, load first.
-2. `items.yaml` -- atomic facts, load on demand.
+1. `summary.md` -- 빠른 컨텍스트. 가장 먼저 읽습니다.
+2. `items.yaml` -- 원자적 사실. 필요할 때 불러옵니다.
 
 ```text
 $AGENT_HOME/life/
-  projects/          # Active work with clear goals/deadlines
+  projects/          # 목표/마감이 분명한 활성 작업
     <name>/
       summary.md
       items.yaml
-  areas/             # Ongoing responsibilities, no end date
+  areas/             # 끝나는 시점이 없는 지속 책임
     people/<name>/
     companies/<name>/
-  resources/         # Reference material, topics of interest
+  resources/         # 참고 자료, 관심 주제
     <topic>/
-  archives/          # Inactive items from the other three
+  archives/          # 위 세 범주의 비활성 항목
   index.md
 ```
 
-**PARA rules:**
+**PARA 규칙**
 
-- **Projects** -- active work with a goal or deadline. Move to archives when complete.
-- **Areas** -- ongoing (people, companies, responsibilities). No end date.
-- **Resources** -- reference material, topics of interest.
-- **Archives** -- inactive items from any category.
+- **Projects** -- 목표나 마감이 있는 활성 작업입니다. 완료되면 archives로 옮깁니다.
+- **Areas** -- 사람, 회사, 책임처럼 계속 유지되는 영역입니다. 종료 시점이 없습니다.
+- **Resources** -- 참고 자료, 관심 주제입니다.
+- **Archives** -- 어떤 범주에서든 비활성화된 항목입니다.
 
-**Fact rules:**
+**사실 기록 규칙**
 
-- Save durable facts immediately to `items.yaml`.
-- Weekly: rewrite `summary.md` from active facts.
-- Never delete facts. Supersede instead (`status: superseded`, add `superseded_by`).
-- When an entity goes inactive, move its folder to `$AGENT_HOME/life/archives/`.
+- 오래 유지될 사실은 즉시 `items.yaml`에 저장합니다.
+- 매주 `summary.md`를 활성 사실 기준으로 다시 작성합니다.
+- 사실은 절대 삭제하지 않습니다. 대신 대체합니다. 예: `status: superseded`, `superseded_by` 추가
+- 엔티티가 비활성 상태가 되면 해당 폴더를 `$AGENT_HOME/life/archives/`로 옮깁니다.
 
-**When to create an entity:**
+**엔티티를 만들 시점**
 
-- Mentioned 3+ times, OR
-- Direct relationship to the user (family, coworker, partner, client), OR
-- Significant project or company in the user's life.
-- Otherwise, note it in daily notes.
+- 3회 이상 언급되었거나
+- 사용자와 직접적인 관계가 있거나: 가족, 동료, 파트너, 고객
+- 사용자의 삶에서 중요한 프로젝트나 회사인 경우
+- 그 외에는 일일 노트에만 기록합니다.
 
-For the atomic fact YAML schema and memory decay rules, see [references/schemas.md](references/schemas.md).
+원자적 사실 YAML 스키마와 메모리 감쇠 규칙은 [references/schemas.md](references/schemas.md)를 참고하세요.
 
-### Layer 2: Daily Notes (`$AGENT_HOME/memory/YYYY-MM-DD.md`)
+### 계층 2: 일일 노트 (`$AGENT_HOME/memory/YYYY-MM-DD.md`)
 
-Raw timeline of events -- the "when" layer.
+사건의 원시 타임라인, 즉 "언제"의 계층입니다.
 
-- Write continuously during conversations.
-- Extract durable facts to Layer 1 during heartbeats.
+- 대화 중에 계속 기록합니다.
+- 하트비트 중에 오래 유지될 사실을 계층 1로 추출합니다.
 
-### Layer 3: Tacit Knowledge (`$AGENT_HOME/MEMORY.md`)
+### 계층 3: 암묵지 (`$AGENT_HOME/MEMORY.md`)
 
-How the user operates -- patterns, preferences, lessons learned.
+사용자가 일하는 방식에 대한 기록입니다. 패턴, 선호, 배운 점을 담습니다.
 
-- Not facts about the world; facts about the user.
-- Update whenever you learn new operating patterns.
+- 세상에 대한 사실이 아니라 사용자에 대한 사실입니다.
+- 새로운 작업 패턴을 알게 될 때마다 업데이트합니다.
 
-## Write It Down -- No Mental Notes
+## 적어 두기 -- 머릿속 메모 금지
 
-Memory does not survive session restarts. Files do.
+세션이 재시작되면 메모리는 사라집니다. 파일은 남습니다.
 
-- Want to remember something -> WRITE IT TO A FILE.
-- "Remember this" -> update `$AGENT_HOME/memory/YYYY-MM-DD.md` or the relevant entity file.
-- Learn a lesson -> update AGENTS.md, TOOLS.md, or the relevant skill file.
-- Make a mistake -> document it so future-you does not repeat it.
-- On-disk text files are always better than holding it in temporary context.
+- 기억하고 싶은 것이 생기면 -> **파일에 적으세요**
+- "이거 기억해" -> `$AGENT_HOME/memory/YYYY-MM-DD.md` 또는 관련 엔티티 파일을 업데이트
+- 교훈을 얻었다면 -> AGENTS.md, TOOLS.md, 또는 관련 skill 파일을 업데이트
+- 실수했다면 -> 미래의 내가 반복하지 않도록 문서화
+- 디스크 위 텍스트 파일은 임시 컨텍스트에만 담아 두는 것보다 항상 낫습니다
 
-## Memory Recall -- Use qmd
+## 메모리 회상 -- `qmd` 사용
 
-Use `qmd` rather than grepping files:
+파일을 직접 grep하기보다 `qmd`를 사용하세요.
 
 ```bash
-qmd query "what happened at Christmas"   # Semantic search with reranking
-qmd search "specific phrase"              # BM25 keyword search
-qmd vsearch "conceptual question"         # Pure vector similarity
+qmd query "크리스마스에 무슨 일이 있었지"   # 재랭킹이 포함된 시맨틱 검색
+qmd search "정확한 문구"                    # BM25 키워드 검색
+qmd vsearch "개념적 질문"                   # 순수 벡터 유사도 검색
 ```
 
-Index your personal folder: `qmd index $AGENT_HOME`
+개인 폴더 색인:
+`qmd index $AGENT_HOME`
 
-Vectors + BM25 + reranking finds things even when the wording differs.
+벡터 + BM25 + 재랭킹을 함께 쓰면 표현이 달라도 더 잘 찾을 수 있습니다.
 
-## Planning
+## 계획
 
-Keep plans in timestamped files in `plans/` at the project root (outside personal memory so other agents can access them). Use `qmd` to search plans. Plans go stale -- if a newer plan exists, do not confuse yourself with an older version. If you notice staleness, update the file to note what it is supersededBy.
+계획은 프로젝트 루트의 `plans/` 안에 타임스탬프 파일로 보관하세요. 개인 메모리 바깥에 둬야 다른 에이전트도 접근할 수 있습니다. 계획 검색에도 `qmd`를 사용하세요. 계획은 쉽게 낡습니다. 더 새로운 계획이 있다면 오래된 버전과 혼동하지 마세요. 오래되었음을 발견하면 무엇에 의해 대체되었는지(`supersededBy`) 파일에 표시하세요.
