@@ -1,55 +1,55 @@
 # Paperclip
 
-**Paperclip is the backbone of the autonomous economy.** We are building the infrastructure that autonomous AI companies run on. Our goal is for Paperclip-powered companies to collectively generate economic output that rivals the GDP of the world's largest countries. Every decision we make should serve that: make autonomous companies more capable, more governable, more scalable, and more real.
+**Paperclip은 자율 경제의 백본입니다.** 우리는 자율형 AI 회사가 돌아가는 인프라를 만들고 있습니다. 우리의 목표는 Paperclip 기반 회사들이 함께 만들어내는 경제적 산출이 세계 최대 국가들의 GDP와 맞먹는 수준에 도달하게 하는 것입니다. 우리가 내리는 모든 결정은 그 목표를 위해 존재해야 합니다. 자율 회사를 더 유능하게, 더 통제 가능하게, 더 확장 가능하게, 더 현실적인 조직으로 만드는 것. 그것이 기준입니다.
 
-## The Vision
+## 비전
 
-Autonomous companies — AI workforces organized with real structure, governance, and accountability — will become a major force in the global economy. Not one company. Thousands. Millions. An entire economic layer that runs on AI labor, coordinated through Paperclip.
+실제 구조, 거버넌스, 책임성을 가진 AI 노동력으로 이루어진 **자율 회사**는 글로벌 경제의 중요한 축이 될 것입니다. 하나의 회사가 아니라 수천 개, 수백만 개의 회사가 생겨날 것입니다. AI 노동 위에서 돌아가고, Paperclip을 통해 조율되는 새로운 경제 계층이 만들어질 것입니다.
 
-Paperclip is not the company. Paperclip is what makes the companies possible. We are the control plane, the nervous system, the operating layer. Every autonomous company needs structure, task management, cost control, goal alignment, and human governance. That's us. We are to autonomous companies what the corporate operating system is to human ones — except this time, the operating system is real software, not metaphor.
+Paperclip은 회사 그 자체가 아닙니다. 회사가 가능해지게 만드는 기반입니다. 우리는 컨트롤 플레인이자 신경계이며 운영 계층입니다. 모든 자율 회사는 구조, 작업 관리, 비용 통제, 목표 정렬, 인간 거버넌스를 필요로 합니다. 그것이 바로 우리가 하는 일입니다. 인간 조직에게 기업 운영 체계가 필요하듯, 자율 회사에게도 운영 체계가 필요합니다. 다만 이번에는 그 운영 체계가 비유가 아니라 실제 소프트웨어입니다.
 
-The measure of our success is not whether one company works. It's whether Paperclip becomes the default foundation that autonomous companies are built on — and whether those companies, collectively, become a serious economic force that rivals the output of nations.
+우리의 성공 기준은 단 하나의 회사가 잘 돌아가느냐가 아닙니다. Paperclip이 자율 회사의 기본 토대가 되느냐, 그리고 그 위에서 돌아가는 회사들이 함께 국가 단위 경제 생산성과 맞설 수 있는 실제 경제적 힘이 되느냐입니다.
 
-## The Problem
+## 문제
 
-Task management software doesn't go far enough. When your entire workforce is AI agents, you need more than a to-do list — you need a **control plane** for an entire company.
+기존 작업 관리 소프트웨어는 여기까지 가지 못합니다. 전체 인력이 AI 에이전트일 때는 단순한 to-do 리스트가 아니라 회사 전체를 위한 **컨트롤 플레인**이 필요합니다.
 
-## What This Is
+## 이것이 무엇인가
 
-Paperclip is the command, communication, and control plane for a company of AI agents. It is the single place where you:
+Paperclip은 AI 에이전트 회사의 지휘, 소통, 통제를 담당하는 컨트롤 플레인입니다. 여기서 사용자는 다음을 한 곳에서 처리합니다.
 
-- **Manage agents as employees** — hire, organize, and track who does what
-- **Define org structure** — org charts that agents themselves operate within
-- **Track work in real time** — see at any moment what every agent is working on
-- **Control costs** — token salary budgets per agent, spend tracking, burn rate
-- **Align to goals** — agents see how their work serves the bigger mission
-- **Store company knowledge** — a shared brain for the organization
+- **에이전트를 직원처럼 관리**: 누가 무엇을 하는지 고용, 조직화, 추적
+- **조직 구조 정의**: 에이전트가 실제로 속해 동작하는 조직도
+- **작업을 실시간으로 추적**: 지금 이 순간 각 에이전트가 무엇을 하는지 확인
+- **비용 통제**: 에이전트별 토큰 예산, 지출 추적, burn rate 관리
+- **목표 정렬**: 각 작업이 더 큰 회사 목표에 어떻게 연결되는지 에이전트가 이해
+- **회사 지식 저장**: 조직 전체가 공유하는 공통 두뇌 역할
 
-## Architecture
+## 아키텍처
 
-Two layers:
+두 개의 계층으로 나뉩니다.
 
-### 1. Control Plane (this software)
+### 1. 컨트롤 플레인 (이 소프트웨어)
 
-The central nervous system. Manages:
+중앙 신경계 역할을 하며 다음을 관리합니다.
 
-- Agent registry and org chart
-- Task assignment and status
-- Budget and token spend tracking
-- Company knowledge base
-- Goal hierarchy (company → team → agent → task)
-- Heartbeat monitoring — know when agents are alive, idle, or stuck
+- 에이전트 레지스트리와 조직도
+- 작업 할당과 상태
+- 예산과 토큰 지출 추적
+- 회사 지식 베이스
+- 목표 계층 구조(회사 → 팀 → 에이전트 → 작업)
+- heartbeat 모니터링: 에이전트가 살아 있는지, 대기 중인지, 막혀 있는지 확인
 
-### 2. Execution Services (adapters)
+### 2. 실행 서비스 (어댑터)
 
-Agents run externally and report into the control plane. An agent is just Python code that gets kicked off and does work. Adapters connect different execution environments:
+에이전트는 외부에서 실행되고 컨트롤 플레인에 상태를 보고합니다. 에이전트는 결국 실행되어 일을 하고 다시 보고하는 코드입니다. 어댑터는 서로 다른 실행 환경을 연결합니다.
 
-- **OpenClaw** — initial adapter target
-- **Heartbeat loop** — simple custom Python that loops, checks in, does work
-- **Others** — any runtime that can call an API
+- **OpenClaw**: 초기 어댑터 대상
+- **Heartbeat loop**: 단순한 커스텀 루프가 주기적으로 확인하고 작업
+- **기타**: API를 호출할 수 있는 어떤 런타임이든 가능
 
-The control plane doesn't run agents. It orchestrates them. Agents run wherever they run and phone home.
+컨트롤 플레인은 에이전트를 직접 실행하지 않습니다. 에이전트를 오케스트레이션합니다. 에이전트는 각자 돌아가는 곳에서 실행되고, Paperclip에 다시 보고합니다.
 
-## Core Principle
+## 핵심 원칙
 
-You should be able to look at Paperclip and understand your entire company at a glance — who's doing what, how much it costs, and whether it's working.
+Paperclip을 보면 회사 전체가 한눈에 보여야 합니다. 누가 무엇을 하고 있는지, 비용은 얼마나 들고 있는지, 그리고 전체 시스템이 제대로 작동하고 있는지를 바로 이해할 수 있어야 합니다.

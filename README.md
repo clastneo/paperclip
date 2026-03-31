@@ -1,16 +1,17 @@
 <p align="center">
-  <img src="doc/assets/header.png" alt="Paperclip — runs your business" width="720" />
+  <img src="doc/assets/header.png" alt="Paperclip" width="720" />
 </p>
 
 <p align="center">
-  <a href="#quickstart"><strong>Quickstart</strong></a> &middot;
-  <a href="https://paperclip.ing/docs"><strong>Docs</strong></a> &middot;
-  <a href="https://github.com/paperclipai/paperclip"><strong>GitHub</strong></a> &middot;
+  <a href="#개인-사용-저장소-안내"><strong>저장소 안내</strong></a> &middot;
+  <a href="#빠른-시작"><strong>빠른 시작</strong></a> &middot;
+  <a href="https://paperclip.ing/docs"><strong>공식 문서</strong></a> &middot;
+  <a href="https://github.com/paperclipai/paperclip"><strong>공식 GitHub</strong></a> &middot;
   <a href="https://discord.gg/m4HZY7xNG3"><strong>Discord</strong></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/paperclipai/paperclip/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
+  <a href="https://github.com/paperclipai/paperclip/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
   <a href="https://github.com/paperclipai/paperclip/stargazers"><img src="https://img.shields.io/github/stars/paperclipai/paperclip?style=flat" alt="Stars" /></a>
   <a href="https://discord.gg/m4HZY7xNG3"><img src="https://img.shields.io/discord/000000000?label=discord" alt="Discord" /></a>
 </p>
@@ -23,163 +24,97 @@
 
 <br/>
 
-## What is Paperclip?
+## 개인 사용 저장소 안내
 
-# Open-source orchestration for zero-human companies
+이 저장소는 **공식 `paperclipai/paperclip` 저장소를 기반으로 한 개인 사용 목적의 포크**입니다.
 
-**If OpenClaw is an _employee_, Paperclip is the _company_**
+- 개인 실험, 설정 조정, 한국어 번역, 사용 편의성 개선이 포함될 수 있습니다.
+- **공식 배포본이나 공식 지원용 저장소가 아닙니다.**
+- 일반 사용자나 팀에서 안정적인 기준을 찾는 경우에는 **공식 저장소와 공식 문서**를 우선 참고하는 것을 권장합니다.
 
-Paperclip is a Node.js server and React UI that orchestrates a team of AI agents to run a business. Bring your own agents, assign goals, and track your agents' work and costs from one dashboard.
+공식 프로젝트:
 
-It looks like a task manager — but under the hood it has org charts, budgets, governance, goal alignment, and agent coordination.
+- 공식 저장소: `https://github.com/paperclipai/paperclip`
+- 공식 문서: `https://paperclip.ing/docs`
 
-**Manage business goals, not pull requests.**
+## Paperclip이란?
 
-|        | Step            | Example                                                            |
-| ------ | --------------- | ------------------------------------------------------------------ |
-| **01** | Define the goal | _"Build the #1 AI note-taking app to $1M MRR."_                    |
-| **02** | Hire the team   | CEO, CTO, engineers, designers, marketers — any bot, any provider. |
-| **03** | Approve and run | Review strategy. Set budgets. Hit go. Monitor from the dashboard.  |
+Paperclip은 **자율형 AI 회사**를 운영하기 위한 컨트롤 플레인입니다.
 
-<br/>
+OpenClaw, Claude Code, Codex, Cursor 같은 다양한 에이전트를 하나의 회사 구조 안에서 조직하고, 목표를 연결하고, 작업을 추적하고, 비용과 예산을 관리할 수 있게 해 줍니다.
 
-> **COMING SOON: Clipmart** — Download and run entire companies with one click. Browse pre-built company templates — full org structures, agent configs, and skills — and import them into your Paperclip instance in seconds.
+겉으로는 작업 관리 도구처럼 보일 수 있지만, 실제로는 다음을 다룹니다.
 
-<br/>
+- 조직도와 보고 체계
+- 이슈/댓글 기반 작업 흐름
+- heartbeat 기반 실행 모델
+- 예산과 비용 통제
+- 승인과 거버넌스
+- 회사 단위 운영 시야
 
-<div align="center">
-<table>
-  <tr>
-    <td align="center"><strong>Works<br/>with</strong></td>
-    <td align="center"><img src="doc/assets/logos/openclaw.svg" width="32" alt="OpenClaw" /><br/><sub>OpenClaw</sub></td>
-    <td align="center"><img src="doc/assets/logos/claude.svg" width="32" alt="Claude" /><br/><sub>Claude Code</sub></td>
-    <td align="center"><img src="doc/assets/logos/codex.svg" width="32" alt="Codex" /><br/><sub>Codex</sub></td>
-    <td align="center"><img src="doc/assets/logos/cursor.svg" width="32" alt="Cursor" /><br/><sub>Cursor</sub></td>
-    <td align="center"><img src="doc/assets/logos/bash.svg" width="32" alt="Bash" /><br/><sub>Bash</sub></td>
-    <td align="center"><img src="doc/assets/logos/http.svg" width="32" alt="HTTP" /><br/><sub>HTTP</sub></td>
-  </tr>
-</table>
+한마디로 말하면:
 
-<em>If it can receive a heartbeat, it's hired.</em>
+> OpenClaw가 직원이라면, Paperclip은 회사입니다.
 
-</div>
+## 이런 사람에게 잘 맞습니다
 
-<br/>
+- 여러 AI 에이전트를 하나의 목표 아래에서 함께 움직이고 싶을 때
+- 에이전트에게 일을 맡기되, 사람이 계속 감독하고 개입할 수 있어야 할 때
+- 비용을 추적하고 예산을 강제하고 싶을 때
+- 단순한 채팅이 아니라 “누가 무엇을 왜 하고 있는지”가 보여야 할 때
+- 개인 프로젝트를 넘어 팀, 조직, 회사 수준의 구조가 필요할 때
 
-## Paperclip is right for you if
+## 핵심 개념
 
-- ✅ You want to build **autonomous AI companies**
-- ✅ You **coordinate many different agents** (OpenClaw, Codex, Claude, Cursor) toward a common goal
-- ✅ You have **20 simultaneous Claude Code terminals** open and lose track of what everyone is doing
-- ✅ You want agents running **autonomously 24/7**, but still want to audit work and chime in when needed
-- ✅ You want to **monitor costs** and enforce budgets
-- ✅ You want a process for managing agents that **feels like using a task manager**
-- ✅ You want to manage your autonomous businesses **from your phone**
+### 회사
 
-<br/>
+Paperclip의 기본 단위는 회사입니다. 하나의 인스턴스에서 여러 회사를 운영할 수 있고, 모든 핵심 데이터는 회사 단위로 분리됩니다.
 
-## Features
+### 에이전트
 
-<table>
-<tr>
-<td align="center" width="33%">
-<h3>🔌 Bring Your Own Agent</h3>
-Any agent, any runtime, one org chart. If it can receive a heartbeat, it's hired.
-</td>
-<td align="center" width="33%">
-<h3>🎯 Goal Alignment</h3>
-Every task traces back to the company mission. Agents know <em>what</em> to do and <em>why</em>.
-</td>
-<td align="center" width="33%">
-<h3>💓 Heartbeats</h3>
-Agents wake on a schedule, check work, and act. Delegation flows up and down the org chart.
-</td>
-</tr>
-<tr>
-<td align="center">
-<h3>💰 Cost Control</h3>
-Monthly budgets per agent. When they hit the limit, they stop. No runaway costs.
-</td>
-<td align="center">
-<h3>🏢 Multi-Company</h3>
-One deployment, many companies. Complete data isolation. One control plane for your portfolio.
-</td>
-<td align="center">
-<h3>🎫 Ticket System</h3>
-Every conversation traced. Every decision explained. Full tool-call tracing and immutable audit log.
-</td>
-</tr>
-<tr>
-<td align="center">
-<h3>🛡️ Governance</h3>
-You're the board. Approve hires, override strategy, pause or terminate any agent — at any time.
-</td>
-<td align="center">
-<h3>📊 Org Chart</h3>
-Hierarchies, roles, reporting lines. Your agents have a boss, a title, and a job description.
-</td>
-<td align="center">
-<h3>📱 Mobile Ready</h3>
-Monitor and manage your autonomous businesses from anywhere.
-</td>
-</tr>
-</table>
+모든 직원은 에이전트입니다. 각 에이전트는 역할, 보고 대상, 어댑터 설정, 작업 범위를 가집니다.
 
-<br/>
+### 목표와 작업
 
-## Problems Paperclip solves
+모든 작업은 더 큰 목표에 연결되어야 합니다. 에이전트는 단순히 “무엇을 해야 하는지”만이 아니라 “왜 하는지”까지 알 수 있어야 합니다.
 
-| Without Paperclip                                                                                                                     | With Paperclip                                                                                                                         |
-| ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| ❌ You have 20 Claude Code tabs open and can't track which one does what. On reboot you lose everything.                              | ✅ Tasks are ticket-based, conversations are threaded, sessions persist across reboots.                                                |
-| ❌ You manually gather context from several places to remind your bot what you're actually doing.                                     | ✅ Context flows from the task up through the project and company goals — your agent always knows what to do and why.                  |
-| ❌ Folders of agent configs are disorganized and you're re-inventing task management, communication, and coordination between agents. | ✅ Paperclip gives you org charts, ticketing, delegation, and governance out of the box — so you run a company, not a pile of scripts. |
-| ❌ Runaway loops waste hundreds of dollars of tokens and max your quota before you even know what happened.                           | ✅ Cost tracking surfaces token budgets and throttles agents when they're out. Management prioritizes with budgets.                    |
-| ❌ You have recurring jobs (customer support, social, reports) and have to remember to manually kick them off.                        | ✅ Heartbeats handle regular work on a schedule. Management supervises.                                                                |
-| ❌ You have an idea, you have to find your repo, fire up Claude Code, keep a tab open, and babysit it.                                | ✅ Add a task in Paperclip. Your coding agent works on it until it's done. Management reviews their work.                              |
+### Heartbeat
 
-<br/>
+에이전트는 스케줄 또는 이벤트에 따라 깨어나 현재 작업을 확인하고, 필요한 행동을 한 뒤 다시 종료합니다.
 
-## Why Paperclip is special
+### 비용과 거버넌스
 
-Paperclip handles the hard orchestration details correctly.
+예산, 승인, 활동 로그를 통해 자율 실행을 통제할 수 있습니다. 완전 자동화가 가능하더라도 사람의 개입 지점은 분명하게 남아 있습니다.
 
-|                                   |                                                                                                               |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| **Atomic execution.**             | Task checkout and budget enforcement are atomic, so no double-work and no runaway spend.                      |
-| **Persistent agent state.**       | Agents resume the same task context across heartbeats instead of restarting from scratch.                     |
-| **Runtime skill injection.**      | Agents can learn Paperclip workflows and project context at runtime, without retraining.                      |
-| **Governance with rollback.**     | Approval gates are enforced, config changes are revisioned, and bad changes can be rolled back safely.        |
-| **Goal-aware execution.**         | Tasks carry full goal ancestry so agents consistently see the "why," not just a title.                        |
-| **Portable company templates.**   | Export/import orgs, agents, and skills with secret scrubbing and collision handling.                          |
-| **True multi-company isolation.** | Every entity is company-scoped, so one deployment can run many companies with separate data and audit trails. |
+## 주요 기능
 
-<br/>
+- 다양한 에이전트 런타임 연결
+- 회사/조직 단위 운영 모델
+- 작업, 댓글, 승인 중심의 운영 흐름
+- 실시간 활동 추적
+- 비용 집계와 예산 강제
+- 목표 정렬과 상위 맥락 전달
+- 다중 회사 지원
+- 모바일에서도 확인 가능한 운영 UI
 
-## What Paperclip is not
+## 빠른 시작
 
-|                              |                                                                                                                      |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| **Not a chatbot.**           | Agents have jobs, not chat windows.                                                                                  |
-| **Not an agent framework.**  | We don't tell you how to build agents. We tell you how to run a company made of them.                                |
-| **Not a workflow builder.**  | No drag-and-drop pipelines. Paperclip models companies — with org charts, goals, budgets, and governance.            |
-| **Not a prompt manager.**    | Agents bring their own prompts, models, and runtimes. Paperclip manages the organization they work in.               |
-| **Not a single-agent tool.** | This is for teams. If you have one agent, you probably don't need Paperclip. If you have twenty — you definitely do. |
-| **Not a code review tool.**  | Paperclip orchestrates work, not pull requests. Bring your own review process.                                       |
+### 일반 사용자에게 권장
 
-<br/>
+공식 프로젝트 기준으로 시작하려면 공식 저장소와 공식 문서를 참고하세요.
 
-## Quickstart
+- 공식 저장소: `https://github.com/paperclipai/paperclip`
+- 공식 문서: `https://paperclip.ing/docs`
 
-Open source. Self-hosted. No Paperclip account required.
+### 로컬에서 바로 실행
 
 ```bash
 npx paperclipai onboard --yes
 ```
 
-If you already have Paperclip configured, rerunning `onboard` keeps the existing config in place. Use `paperclipai configure` to edit settings.
+이미 Paperclip 설정이 있다면 `onboard`를 다시 실행해도 기존 설정은 유지됩니다. 설정을 바꾸고 싶다면 `paperclipai configure`를 사용하세요.
 
-Or manually:
+직접 클론해서 실행하려면:
 
 ```bash
 git clone https://github.com/paperclipai/paperclip.git
@@ -188,105 +123,48 @@ pnpm install
 pnpm dev
 ```
 
-This starts the API server at `http://localhost:3100`. An embedded PostgreSQL database is created automatically — no setup required.
+이 명령은 기본적으로 `http://localhost:3100`에서 서버를 시작합니다.
 
-> **Requirements:** Node.js 20+, pnpm 9.15+
+요구사항:
 
-<br/>
+- Node.js 20+
+- pnpm 9.15+
 
-## FAQ
-
-**What does a typical setup look like?**
-Locally, a single Node.js process manages an embedded Postgres and local file storage. For production, point it at your own Postgres and deploy however you like. Configure projects, agents, and goals — the agents take care of the rest.
-
-If you're a solo-entreprenuer you can use Tailscale to access Paperclip on the go. Then later you can deploy to e.g. Vercel when you need it.
-
-**Can I run multiple companies?**
-Yes. A single deployment can run an unlimited number of companies with complete data isolation.
-
-**How is Paperclip different from agents like OpenClaw or Claude Code?**
-Paperclip _uses_ those agents. It orchestrates them into a company — with org charts, budgets, goals, governance, and accountability.
-
-**Why should I use Paperclip instead of just pointing my OpenClaw to Asana or Trello?**
-Agent orchestration has subtleties in how you coordinate who has work checked out, how to maintain sessions, monitoring costs, establishing governance - Paperclip does this for you.
-
-(Bring-your-own-ticket-system is on the Roadmap)
-
-**Do agents run continuously?**
-By default, agents run on scheduled heartbeats and event-based triggers (task assignment, @-mentions). You can also hook in continuous agents like OpenClaw. You bring your agent and Paperclip coordinates.
-
-<br/>
-
-## Development
+## 개발
 
 ```bash
-pnpm dev              # Full dev (API + UI, watch mode)
-pnpm dev:once         # Full dev without file watching
-pnpm dev:server       # Server only
-pnpm build            # Build all
-pnpm typecheck        # Type checking
-pnpm test:run         # Run tests
-pnpm db:generate      # Generate DB migration
-pnpm db:migrate       # Apply migrations
+pnpm dev
+pnpm dev:once
+pnpm dev:server
+pnpm build
+pnpm typecheck
+pnpm test:run
+pnpm db:generate
+pnpm db:migrate
 ```
 
-See [doc/DEVELOPING.md](doc/DEVELOPING.md) for the full development guide.
+추가 정보:
 
-<br/>
+- 개발 가이드: [doc/DEVELOPING.md](doc/DEVELOPING.md)
+- 데이터베이스 가이드: [doc/DATABASE.md](doc/DATABASE.md)
+- 구현 기준: [doc/SPEC-implementation.md](doc/SPEC-implementation.md)
 
-## Roadmap
+## 이 포크에서 기대할 수 있는 점
 
-- ✅ Plugin system (e.g. add a knowledge base, custom tracing, queues, etc)
-- ✅ Get OpenClaw / claw-style agent employees
-- ✅ companies.sh - import and export entire organizations
-- ✅ Easy AGENTS.md configurations
-- ✅ Skills Manager
-- ✅ Scheduled Routines
-- ✅ Better Budgeting
-- ⚪ Artifacts & Deployments
-- ⚪ CEO Chat
-- ⚪ MAXIMIZER MODE
-- ⚪ Multiple Human Users
-- ⚪ Cloud / Sandbox agents (e.g. Cursor / e2b agents)
-- ⚪ Cloud deployments
-- ⚪ Desktop App
+이 저장소는 개인 사용 목적의 포크이므로 다음이 포함될 수 있습니다.
 
-<br/>
+- 한국어 문서화
+- 개인 워크플로에 맞춘 설정 변경
+- 실험적 UI/문구 조정
+- 공식 upstream에 아직 반영되지 않은 임시 패치
 
-## Community & Plugins
+따라서:
 
-Find Plugins and more at [awesome-paperclip](https://github.com/gsxdsm/awesome-paperclip)
+- 공식 기능 기준은 upstream 문서를 우선 보세요.
+- 이 저장소의 변경은 개인 목적에 맞춰 달라질 수 있습니다.
 
-## Contributing
+## 커뮤니티
 
-We welcome contributions. See the [contributing guide](CONTRIBUTING.md) for details.
-
-<br/>
-
-## Community
-
-- [Discord](https://discord.gg/m4HZY7xNG3) — Join the community
-- [GitHub Issues](https://github.com/paperclipai/paperclip/issues) — bugs and feature requests
-- [GitHub Discussions](https://github.com/paperclipai/paperclip/discussions) — ideas and RFC
-
-<br/>
-
-## License
-
-MIT &copy; 2026 Paperclip
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/image?repos=paperclipai/paperclip&type=date&legend=top-left)](https://www.star-history.com/?repos=paperclipai%2Fpaperclip&type=date&legend=top-left)
-
-<br/>
-
----
-
-<p align="center">
-  <img src="doc/assets/footer.jpg" alt="" width="720" />
-</p>
-
-<p align="center">
-  <sub>Open source under MIT. Built for people who want to run companies, not babysit agents.</sub>
-</p>
+- 공식 프로젝트: `paperclipai/paperclip`
+- Discord: `https://discord.gg/m4HZY7xNG3`
+- 기여 가이드: [CONTRIBUTING.md](CONTRIBUTING.md)

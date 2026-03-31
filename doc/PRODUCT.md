@@ -1,146 +1,161 @@
-# Paperclip — Product Definition
+# Paperclip 제품 정의
 
-## What It Is
+## 이것이 무엇인가
 
-Paperclip is the control plane for autonomous AI companies. One instance of Paperclip can run multiple companies. A **company** is a first-order object.
+Paperclip은 자율형 AI 회사를 위한 컨트롤 플레인입니다. 하나의 Paperclip 인스턴스는 여러 회사를 운영할 수 있습니다. **회사**는 가장 기본이 되는 1급 객체입니다.
 
-## Core Concepts
+## 핵심 개념
 
-### Company
+### 회사
 
-A company has:
+회사는 다음을 가집니다.
 
-- A **goal** — the reason it exists ("Create the #1 AI note-taking app that does $1M MRR within 3 months")
-- **Employees** — every employee is an AI agent
-- **Org structure** — who reports to whom
-- **Revenue & expenses** — tracked at the company level
-- **Task hierarchy** — all work traces back to the company goal
+- **목표**: 회사가 존재하는 이유
+  예: "3개월 안에 월 반복 매출 100만 달러를 만드는 최고의 AI 노트 앱을 만든다"
+- **직원**: 모든 직원은 AI 에이전트입니다.
+- **조직 구조**: 누가 누구에게 보고하는지
+- **수익과 비용**: 회사 단위로 추적
+- **작업 계층 구조**: 모든 작업은 회사 목표로 이어져야 함
 
-### Employees & Agents
+### 직원과 에이전트
 
-Every employee is an agent. When you create a company, you start by defining the CEO, then build out from there.
+모든 직원은 에이전트입니다. 회사를 만들면 먼저 CEO를 정의하고, 그 아래 조직을 확장합니다.
 
-Each employee has:
+각 직원은 다음 속성을 가집니다.
 
-- **Adapter type + config** — how this agent runs and what defines its identity/behavior. This is adapter-specific (e.g., an OpenClaw agent might use SOUL.md and HEARTBEAT.md files; a Claude Code agent might use CLAUDE.md; a bare script might use CLI args). Paperclip doesn't prescribe the format — the adapter does.
-- **Role & reporting** — their title, who they report to, who reports to them
-- **Capabilities description** — a short paragraph on what this agent does and when they're relevant (helps other agents discover who can help with what)
+- **어댑터 타입 + 설정**: 이 에이전트가 어떻게 실행되고 어떤 정체성/행동을 가지는지 정의합니다. 형식은 어댑터에 따라 다릅니다. 예를 들어 OpenClaw 에이전트는 `SOUL.md`와 `HEARTBEAT.md`를 사용할 수 있고, Claude Code 에이전트는 `CLAUDE.md`를, 단순 스크립트는 CLI 인자를 사용할 수 있습니다. Paperclip이 형식을 강제하지 않고, 어댑터가 형식을 정합니다.
+- **역할과 보고 관계**: 직함, 누구에게 보고하는지, 누가 이 에이전트에게 보고하는지
+- **역량 설명**: 이 에이전트가 무엇을 하고 언제 도움을 줄 수 있는지에 대한 짧은 설명. 다른 에이전트가 누구에게 무엇을 요청해야 하는지 찾는 데 도움을 줍니다.
 
-Example: A CEO agent's adapter config tells it to "review what your executives are doing, check company metrics, reprioritize if needed, assign new strategic initiatives" on each heartbeat. An engineer's config tells it to "check assigned tasks, pick the highest priority, and work it."
+예를 들어 CEO 에이전트의 어댑터 설정은 heartbeat마다 "경영진이 무엇을 하는지 검토하고, 회사 지표를 확인하고, 필요하면 우선순위를 재조정하고, 새로운 전략 이니셔티브를 배정하라" 같은 역할을 정의할 수 있습니다. 엔지니어 에이전트의 설정은 "할당된 작업을 확인하고, 가장 우선순위가 높은 작업을 골라 처리하라"가 될 수 있습니다.
 
-Then you define who reports to the CEO: a CTO managing programmers, a CMO managing the marketing team, and so on. Every agent in the tree gets their own adapter configuration.
+그 다음 CEO에게 보고하는 사람을 정의합니다. 예를 들어 CTO는 개발자들을 관리하고, CMO는 마케팅 팀을 관리합니다. 트리 안의 모든 에이전트는 각자의 어댑터 설정을 가집니다.
 
-### Agent Execution
+### 에이전트 실행
 
-There are two fundamental modes for running an agent's heartbeat:
+에이전트 heartbeat 실행 방식에는 두 가지 기본 모델이 있습니다.
 
-1. **Run a command** — Paperclip kicks off a process (shell command, Python script, etc.) and tracks it. The heartbeat is "execute this and monitor it."
-2. **Fire and forget a request** — Paperclip sends a webhook/API call to an externally running agent. The heartbeat is "notify this agent to wake up." (OpenClaw hooks work this way.)
+1. **명령 실행 방식**
+   Paperclip이 프로세스(셸 명령, Python 스크립트 등)를 직접 실행하고 추적합니다. heartbeat는 "이 명령을 실행하고 모니터링하는 것"입니다.
 
-We provide sensible defaults — a default agent that shells out to Claude Code or Codex with your configuration, remembers session IDs, runs basic scripts. But you can plug in anything.
+2. **요청 발사 후 반환하는 방식**
+   Paperclip이 외부에서 이미 실행 중인 에이전트에게 webhook/API 호출을 보냅니다. heartbeat는 "이 에이전트가 깨어나도록 알리는 것"입니다. OpenClaw hook이 이 방식입니다.
 
-### Task Management
+기본 제공 설정도 준비됩니다. 예를 들면 Claude Code나 Codex를 현재 설정으로 셸 실행하고, 세션 ID를 기억하고, 기본 스크립트를 돌리는 기본 에이전트 같은 것입니다. 하지만 필요한 경우 어떤 런타임이든 연결할 수 있어야 합니다.
 
-Task management is hierarchical. At any moment, every piece of work must trace back to the company's top-level goal through a chain of parent tasks:
+### 작업 관리
 
+작업 관리는 계층형입니다. 언제나 모든 작업은 회사 최상위 목표까지 부모 체인을 따라 연결되어야 합니다.
+
+```text
+나는 Granola가 쓰는 Facebook 광고를 조사하고 있다 (현재 작업)
+  왜냐하면 → 우리 소프트웨어용 Facebook 광고를 만들어야 하기 때문이다 (부모)
+    왜냐하면 → 신규 가입자를 100명 늘려야 하기 때문이다 (부모)
+      왜냐하면 → 이번 주 매출을 2,000달러까지 올려야 하기 때문이다 (부모)
+        왜냐하면 → ...
+          왜냐하면 → 우리는 3개월 안에 월 반복 매출 100만 달러의 최고의 AI 노트 앱을 만들고 있기 때문이다
 ```
-I am researching the Facebook ads Granola uses (current task)
-  because → I need to create Facebook ads for our software (parent)
-    because → I need to grow new signups by 100 users (parent)
-      because → I need to get revenue to $2,000 this week (parent)
-        because → ...
-          because → We're building the #1 AI note-taking app to $1M MRR in 3 months
-```
 
-Tasks have parentage. Every task exists in service of a parent task, all the way up to the company goal. This is what keeps autonomous agents aligned — they can always answer "why am I doing this?"
+작업에는 부모가 있습니다. 모든 작업은 부모 작업을 위해 존재하고, 그 연결은 끝내 회사 목표까지 이어집니다. 이것이 자율 에이전트를 정렬 상태로 유지하는 핵심입니다. 에이전트는 언제나 "왜 이 일을 하는가?"에 답할 수 있어야 합니다.
 
-More detailed task structure TBD.
+더 세부적인 작업 구조는 아직 추가 정의가 필요합니다.
 
-## Principles
+## 원칙
 
-1. **Unopinionated about how you run your agents.** Your agents could be OpenClaw bots, Python scripts, Node scripts, Claude Code sessions, Codex instances — we don't care. Paperclip defines the control plane for communication and provides utility infrastructure for heartbeats. It does not mandate an agent runtime.
+1. **에이전트 실행 방식에는 개입하지 않는다.**
+   에이전트는 OpenClaw일 수도 있고, Python 스크립트일 수도 있고, Node 스크립트일 수도 있고, Claude Code 세션이나 Codex 인스턴스일 수도 있습니다. Paperclip은 소통을 위한 컨트롤 플레인을 정의하고 heartbeat를 위한 유틸리티 인프라를 제공합니다. 특정 런타임을 강제하지 않습니다.
 
-2. **Company is the unit of organization.** Everything lives under a company. One Paperclip instance, many companies.
+2. **회사가 조직의 기본 단위다.**
+   모든 것은 회사 아래에 존재합니다. 하나의 Paperclip 인스턴스, 여러 회사.
 
-3. **Adapter config defines the agent.** Every agent has an adapter type and configuration that controls its identity and behavior. The minimum contract is just "be callable."
+3. **어댑터 설정이 에이전트를 정의한다.**
+   모든 에이전트는 정체성과 행동을 결정하는 어댑터 타입과 설정을 가집니다. 최소 계약은 "호출 가능해야 한다"입니다.
 
-4. **All work traces to the goal.** Hierarchical task management means nothing exists in isolation. If you can't explain why a task matters to the company goal, it shouldn't exist.
+4. **모든 작업은 목표로 이어져야 한다.**
+   계층형 작업 관리는 어떤 일도 고립된 상태로 존재하게 두지 않습니다. 회사 목표에 왜 중요한지 설명할 수 없는 작업은 존재해서는 안 됩니다.
 
-5. **Control plane, not execution plane.** Paperclip orchestrates. Agents run wherever they run and phone home.
+5. **실행 플레인이 아니라 컨트롤 플레인이다.**
+   Paperclip은 오케스트레이션합니다. 에이전트는 각자 실행되는 곳에서 실행되고, 결과를 다시 보고합니다.
 
-## User Flow (Dream Scenario)
+## 사용자 흐름 (이상적인 시나리오)
 
-1. Open Paperclip, create a new company
-2. Define the company's goal: "Create the #1 AI note-taking app, $1M MRR in 3 months"
-3. Create the CEO
-   - Choose an adapter (e.g., process adapter for Claude Code, HTTP adapter for OpenClaw)
-   - Configure the adapter (agent identity, loop behavior, execution settings)
-   - CEO proposes strategic breakdown → board approves
-4. Define the CEO's reports: CTO, CMO, CFO, etc.
-   - Each gets their own adapter config and role definition
-5. Define their reports: engineers under CTO, marketers under CMO, etc.
-6. Set budgets, define initial strategic tasks
-7. Hit go — agents start their heartbeats and the company runs
+1. Paperclip을 열고 새 회사를 만든다
+2. 회사 목표를 정의한다
+   예: "3개월 안에 월 반복 매출 100만 달러의 최고의 AI 노트 앱 만들기"
+3. CEO를 만든다
+   - 어댑터를 선택한다 (예: Claude Code용 process adapter, OpenClaw용 HTTP adapter)
+   - 어댑터를 설정한다 (에이전트 정체성, 루프 동작, 실행 설정)
+   - CEO가 전략 분해안을 제안하고, 보드가 승인한다
+4. CEO의 직속 보고 체계를 정의한다
+   예: CTO, CMO, CFO 등
+   - 각자 어댑터 설정과 역할 정의를 가진다
+5. 그 아래 팀을 정의한다
+   예: CTO 아래 엔지니어, CMO 아래 마케터 등
+6. 예산을 설정하고 초기 전략 작업을 정의한다
+7. 실행한다
+   에이전트들이 heartbeat를 시작하고 회사가 실제로 돌아간다
 
-## Guidelines
+## 가이드라인
 
-There are two runtime modes Paperclip must support:
+Paperclip은 두 가지 런타임 모드를 지원해야 합니다.
 
-- `local_trusted` (default): single-user local trusted deployment with no login friction
-- `authenticated`: login-required mode that supports both private-network and public deployment exposure policies
+- `local_trusted` (기본): 로그인 부담이 없는 단일 사용자 로컬 신뢰 배포
+- `authenticated`: 로그인 기반이며, private/public 노출 정책을 함께 지원하는 모드
 
-Canonical mode design and command expectations live in `doc/DEPLOYMENT-MODES.md`.
+표준 모드 설계와 CLI 기대 동작은 `doc/DEPLOYMENT-MODES.md`에 있습니다.
 
-## Further Detail
+## 추가 상세
 
-See [SPEC.md](./SPEC.md) for the full technical specification and [TASKS.md](./TASKS.md) for the task management data model.
+전체 기술 명세는 [SPEC.md](./SPEC.md)를, 작업 관리 데이터 모델은 [TASKS.md](./TASKS.md)를 참고하세요.
 
 ---
 
-Paperclip’s core identity is a **control plane for autonomous AI companies**, centered on **companies, org charts, goals, issues/comments, heartbeats, budgets, approvals, and board governance**. The public docs are also explicit about the current boundaries: **tasks/comments are the built-in communication model**, Paperclip is **not a chatbot**, and it is **not a code review tool**. The roadmap already points toward **easier onboarding, cloud agents, easier agent configuration, plugins, better docs, and ClipMart/ClipHub-style reusable companies/templates**.
+Paperclip의 핵심 정체성은 **자율형 AI 회사를 위한 컨트롤 플레인**입니다. 중심에는 **회사, 조직도, 목표, 이슈/댓글, heartbeat, 예산, 승인, 보드 거버넌스**가 있습니다. 공개 문서에서도 현재 제품의 경계를 분명히 합니다. **작업/댓글이 기본 커뮤니케이션 모델**이며, Paperclip은 **챗봇이 아니고**, **코드 리뷰 도구도 아닙니다**. 로드맵은 이미 **더 쉬운 온보딩, 클라우드 에이전트, 더 쉬운 에이전트 설정, 플러그인, 더 나은 문서, ClipMart/ClipHub 스타일의 재사용 가능한 회사 템플릿**을 가리키고 있습니다.
 
-## What Paperclip should do vs. not do
+## Paperclip이 해야 할 일과 하지 말아야 할 일
 
-**Do**
+**해야 할 일**
 
-- Stay **board-level and company-level**. Users should manage goals, orgs, budgets, approvals, and outputs.
-- Make the first five minutes feel magical: install, answer a few questions, see a CEO do something real.
-- Keep work anchored to **issues/comments/projects/goals**, even if the surface feels conversational.
-- Treat **agency / internal team / startup** as the same underlying abstraction with different templates and labels.
-- Make outputs first-class: files, docs, reports, previews, links, screenshots.
-- Provide **hooks into engineering workflows**: worktrees, preview servers, PR links, external review tools.
-- Use **plugins** for edge cases like rich chat, knowledge bases, doc editors, custom tracing.
+- 항상 **보드 수준, 회사 수준**의 추상화를 유지해야 합니다. 사용자는 목표, 조직, 예산, 승인, 산출물을 관리해야 합니다.
+- 첫 5분이 마법처럼 느껴져야 합니다. 설치하고, 몇 가지 질문에 답하고, CEO가 실제 작업을 수행하는 모습을 봐야 합니다.
+- 사용자 경험이 대화형으로 보여도 실제 작업은 **issues/comments/projects/goals**에 붙어 있어야 합니다.
+- **agency / internal team / startup**은 서로 다른 제품이 아니라, 템플릿과 라벨만 다른 같은 추상화여야 합니다.
+- 결과물을 1급 객체로 다뤄야 합니다. 파일, 문서, 보고서, 프리뷰 링크, 스크린샷, 계획, PR 같은 산출물이 중요합니다.
+- **엔지니어링 워크플로와 연결되는 훅**을 제공해야 합니다. 예를 들어 worktree, preview server, PR 링크, 외부 리뷰 도구 등입니다.
+- 풍부한 채팅, 지식 베이스, 문서 편집기, 커스텀 트레이싱 같은 엣지 기능은 **플러그인**으로 확장할 수 있어야 합니다.
 
-**Do not**
+**하지 말아야 할 일**
 
-- Do not make the core product a general chat app. The current product definition is explicitly task/comment-centric and “not a chatbot,” and that boundary is valuable.
-- Do not build a complete Jira/GitHub replacement. The repo/docs already position Paperclip as organization orchestration, not focused on pull-request review.
-- Do not build enterprise-grade RBAC first. The current V1 spec still treats multi-board governance and fine-grained human permissions as out of scope, so the first multi-user version should be coarse and company-scoped.
-- Do not lead with raw bash logs and transcripts. Default view should be human-readable intent/progress, with raw detail beneath.
-- Do not force users to understand provider/API-key plumbing unless absolutely necessary. There are active onboarding/auth issues already; friction here is clearly real.
+- 제품의 핵심을 범용 채팅 앱으로 만들지 마세요. 현재 제품 정의는 명시적으로 작업/댓글 중심이며, 챗봇이 아닙니다. 이 경계는 가치가 있습니다.
+- Jira나 GitHub를 완전히 대체하려 하지 마세요. 현재 저장소와 문서는 Paperclip을 pull request 중심 제품이 아니라 조직 오케스트레이션 제품으로 위치시킵니다.
+- 처음부터 엔터프라이즈급 RBAC를 만들지 마세요. 현재 V1 명세는 여전히 다중 보드 거버넌스와 세밀한 인간 권한 관리를 범위 밖으로 두고 있으므로, 첫 multi-user 버전은 거칠더라도 회사 단위 스코프면 충분합니다.
+- 기본 화면을 raw bash 로그와 transcript 중심으로 만들지 마세요. 기본 레이어는 사람이 읽을 수 있는 의도와 진행 상황이어야 하고, raw detail은 아래쪽으로 내려가야 합니다.
+- 사용자가 provider/API-key plumbing을 꼭 필요하지 않은데도 이해하게 만들지 마세요. 이미 온보딩과 인증 관련 이슈가 있는 만큼, 여기의 마찰은 분명한 문제입니다.
 
-## Specific design goals
+## 구체적인 디자인 목표
 
-1. **Time-to-first-success under 5 minutes**
-   A fresh user should go from install to “my CEO completed a first task” in one sitting.
+1. **첫 성공까지 5분 이내**
+   새 사용자는 설치 후 한 번 앉아서 "내 CEO가 첫 작업을 끝냈다"까지 도달해야 합니다.
 
-2. **Board-level abstraction always wins**
-   The default UI should answer: what is the company doing, who is doing it, why does it matter, what did it cost, and what needs my approval.
+2. **기본 UI는 언제나 보드 수준 추상화를 우선한다**
+   기본 화면은 다음 질문에 답해야 합니다. 회사는 지금 무엇을 하고 있는가? 누가 하고 있는가? 왜 중요한가? 비용은 얼마나 들었는가? 무엇이 내 승인을 기다리고 있는가?
 
-3. **Conversation stays attached to work objects**
-   “Chat with CEO” should still resolve to strategy threads, decisions, tasks, or approvals.
+3. **대화는 항상 작업 객체에 붙어 있어야 한다**
+   "CEO와 채팅" 같은 경험도 결국 전략 스레드, 결정, 작업, 승인에 연결되어야 합니다.
 
-4. **Progressive disclosure**
-   Top layer: human-readable summary. Middle layer: checklist/steps/artifacts. Bottom layer: raw logs/tool calls/transcript.
+4. **점진적 정보 공개**
+   상단: 사람이 읽을 수 있는 요약
+   중간: 체크리스트, 단계, 산출물
+   하단: raw logs, tool calls, transcript
 
-5. **Output-first**
-   Work is not done until the user can see the result: file, document, preview link, screenshot, plan, or PR.
+5. **결과물 중심**
+   사용자가 파일, 문서, 프리뷰 링크, 스크린샷, 계획, PR 같은 실제 결과를 볼 수 있어야 작업이 끝난 것입니다.
 
-6. **Local-first, cloud-ready**
-   The mental model should not change between local solo use and shared/private or public/cloud deployment.
+6. **로컬 우선, 클라우드 준비**
+   로컬 단독 사용과 공유/private 또는 public/cloud 배포 사이에서 정신 모델이 달라지면 안 됩니다.
 
-7. **Safe autonomy**
-   Auto mode is allowed; hidden token burn is not.
+7. **안전한 자율성**
+   자동 실행은 가능해야 하지만, 숨어 있는 토큰 낭비는 허용되면 안 됩니다.
 
-8. **Thin core, rich edges**
-   Put optional chat, knowledge, and special surfaces into plugins/extensions rather than bloating the control plane.
+8. **얇은 코어, 풍부한 확장**
+   선택적인 채팅, 지식, 특수 UI는 컨트롤 플레인을 비대하게 만들기보다 플러그인/확장으로 빼야 합니다.
