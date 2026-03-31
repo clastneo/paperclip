@@ -18,6 +18,10 @@
 
 <br/>
 
+> **Personal fork notice:** This repository is a fork maintained for personal use.
+>
+> **개인용 포크 안내:** 이 저장소는 개인 이용을 위해 포크한 저장소입니다.
+
 <div align="center">
   <video src="https://github.com/user-attachments/assets/773bdfb2-6d1e-4e30-8c5f-3487d5b70c8f" width="600" controls></video>
 </div>
